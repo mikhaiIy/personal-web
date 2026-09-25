@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mikhail Bin Yassin — Expedition Log</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23070b12'/%3E%3Cpath d='M4 24 L13 9 L18 17 L21 12 L28 24 Z' fill='none' stroke='%23c9a35c' stroke-width='2'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --night:#070b12;
+    --line:#3a4a5a;
+    --line-hi:#54708c;
+    --trail:#c9a35c;
+    --amber:#d9a441;
+    --ink:#c7d5e4;
+    --dim:#5d7186;
+    --green:#79f2a0;
+    --green-dim:#3f8f5f;
+    --paper:#ece5d3;
+    --mono:"Courier New", Courier, monospace;
+    --sans:"MS Sans Serif", Tahoma, Geneva, sans-serif;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html,body{ height:100%; overflow:hidden; background:var(--night); color:var(--ink); font-family:var(--sans); }
+
+  /* ---------- scene ---------- */
+  #scene{ position:fixed; inset:0; display:block; }
+  #grid{
+    position:fixed; inset:0; pointer-events:none; z-index:2;
+    background-image:
+      linear-gradient(rgba(90,120,150,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(90,120,150,.06) 1px, transparent 1px);
+    background-size:72px 72px;
+  }
+  #frame{
+    position:fixed; inset:8px; pointer-events:none; z-index:2;
+    border:1px solid rgba(122,150,180,.28);
+    box-shadow: inset 0 0 0 1px rgba(7,11,18,.6);
+  }
+
+  /* ---------- svg bits ---------- */
+  .contour{ fill:none; stroke:var(--line); stroke-width:1; vector-effect:non-scaling-stroke; }
+  .contour.idx{ stroke:var(--line-hi); stroke-width:1.4; }
+  .contlbl{ font:10px var(--mono); fill:#4d6076; letter-spacing:.05em; }
+  .trail{
+    fill:none; stroke:var(--trail); stroke-width:2;
+    stroke-dasharray:7 7; stroke-linecap:round;
+    vector-effect:non-scaling-stroke;
+    animation: dashdrift 36s linear infinite;
+    opacity:.9;
+  }
+  @keyframes dashdrift{ to{ stroke-dashoffset:-336; } }
+  .star{ fill:#cfe0f2; }
+  .mk{ cursor:pointer; }
+  .mk .pole{ stroke:#8fa3b8; stroke-width:2; }
+  .mk .pennant{ fill:#6b7f96; transition:fill .3s; }
+  .mk .plate{ fill:#0e1622; stroke:#6b7f96; stroke-width:1.5; transition:stroke .3s; }
+  .mk .pnum{ font:11px var(--mono); fill:#9fb2c8; text-anchor:middle; }
+  .mk .mname{ font:12px var(--sans); fill:#8fa3b8; letter-spacing:.12em; text-anchor:middle; }
+  .mk .msub{ font:10px var(--mono); fill:#54687e; letter-spacing:.06em; text-anchor:middle; }
+  .mk.active .pennant{ fill:var(--amber); }
+  .mk.active .plate{ stroke:var(--amber); }
+  .mk.active .pnum{ fill:#f0d9a0; }
+  .mk.active .mname{ fill:#e8d9b0; }
+  .mk.active .msub{ fill:#a08a58; }
+
+  /* ---------- survey card (inside foreignObject) ---------- */
+  .card{
+    width:290px; background:linear-gradient(#efe8d6,#e0d7c0);
+    border:1px solid #8d8264; padding:10px 12px 11px;
+    box-shadow: inset 0 0 0 1px #fffdf4, inset 0 0 0 3px #c9bfa4, 5px 7px 0 rgba(0,0,0,.5);
+    color:#2c2a22; font-family:var(--sans); position:relative;
+    opacity:0; transform:translateY(6px); transition:opacity .35s, transform .35s;
+    pointer-events:none;
+  }
+  .card.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  .card h4{ font-size:13px; letter-spacing:.1em; color:#3a3427; padding-right:64px; }
+  .c-sub{ font:10px var(--mono); color:#7a6f54; letter-spacing:.08em; margin:2px 0 7px; }
+  .c-row{ display:flex; gap:8px; font:10px var(--mono); margin:3px 0; align-items:baseline; }
+  .c-row span{ color:#8a7d5e; width:48px; flex:none; letter-spacing:.05em; }
+  .c-row b{ color:#33301f; font-weight:700; }
+  .card p{ font:11px/1.45 var(--sans); color:#4a4433; margin-top:8px; font-style:italic; }
+  .c-stamp{
+    position:absolute; top:9px; right:9px; color:#9c3d31; border:2px solid #9c3d31;
+    font:9px var(--mono); padding:2px 5px; letter-spacing:.15em;
+    transform:rotate(-7deg); opacity:.75; border-radius:2px;
+  }
+  .c-cta{
+    display:inline-block; margin-top:9px; padding:6px 12px;
+    background:#3a3427; color:#efe8d6; text-decoration:none;
+    font:11px var(--mono); letter-spacing:.1em; border:1px solid #191510;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 2px 2px 0 rgba(0,0,0,.35);
+  }
+  .c-cta:hover{ background:#54492f; }
+
+  /* ---------- terminal panel ---------- */
+  #panel{
+    position:fixed; left:16px; top:16px; bottom:64px; width:362px; z-index:5;
+    background:rgba(9,15,24,.94); border:1px solid #233246;
+    box-shadow: inset 0 0 0 1px rgba(120,220,160,.06), 6px 8px 0 rgba(0,0,0,.45);
+    display:flex; flex-direction:column;
+  }
+  .phead{
+    padding:7px 10px; font:11px var(--mono); color:var(--green-dim);
+    letter-spacing:.08em; border-bottom:1px solid #1d2a3a;
+    background:rgba(20,32,48,.6); display:flex; align-items:center; gap:8px;
+    flex:none;
+  }
+  .pdot{ width:8px; height:8px; border-radius:50%; background:var(--green); box-shadow:0 0 6px var(--green); flex:none; }
+  #log{
+    flex:1; overflow-y:auto; padding:10px 12px;
+    font:12px/1.55 var(--mono); color:var(--green);
+    scrollbar-width:thin; scrollbar-color:#233246 transparent;
+    text-shadow:0 0 5px rgba(121,242,160,.35);
+  }
+  #log .lt{ color:var(--green-dim); }
+  #log .ltag{ color:#57c98a; }
+  #log .lm{ color:var(--green); }
+  #log .cursor{
+    display:inline-block; width:7px; height:13px; background:var(--green);
+    vertical-align:-2px; animation:blink 1s steps(1) infinite; margin-left:2px;
+  }
+  .mk .hit{ fill:none; stroke:none; pointer-events:all; }
+  .pctrl{
+    flex:none; display:flex; align-items:center; gap:8px;
+    padding:8px 10px; border-top:1px solid #1d2a3a; background:rgba(20,32,48,.6);
+  }
+  .pctrl button{
+    font:10px var(--mono); letter-spacing:.1em; color:var(--green);
+    background:#12202e; border:1px solid #2c4260; padding:6px 10px; cursor:pointer;
+    box-shadow: inset 0 1px 0 rgba(150,255,190,.12), 2px 2px 0 rgba(0,0,0,.4);
+  }
+  .pctrl button:hover{ background:#1a2f42; }
+  .pctrl button:active{ transform:translate(1px,1px); box-shadow:none; }
+  #stopind{ flex:1; text-align:center; font:10px var(--mono); color:var(--green-dim); letter-spacing:.08em; }
+
+  /* ---------- HUD ---------- */
+  #altbox{ position:fixed; top:16px; right:20px; z-index:5; text-align:right; }
+  .al-label{ font:10px var(--mono); color:var(--dim); letter-spacing:.28em; }
+  #alt{
+    font:30px var(--mono); color:var(--amber); text-shadow:0 0 12px rgba(217,164,65,.3);
+    letter-spacing:.03em; line-height:1.15;
+  }
+  .al-sub{ font:9px var(--mono); color:#3d4d60; letter-spacing:.12em; }
+
+  #rope{ position:fixed; top:22px; left:calc(50% + 60px); transform:translateX(-50%); width:330px; z-index:5; }
+  .rope-label{ font:9px var(--mono); color:var(--dim); letter-spacing:.22em; margin-bottom:6px; text-align:center; }
+  .rope-line{
+    position:relative; height:7px; border-radius:4px;
+    background:repeating-linear-gradient(55deg, #c9a35c 0 5px, #9a7534 5px 7px);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,.35), inset 0 -1px 2px rgba(0,0,0,.5), 0 2px 4px rgba(0,0,0,.5);
+  }
+  .tick{
+    position:absolute; top:-3px; width:3px; height:13px; background:#6e5527;
+    transform:translateX(-50%); border-radius:1px;
+  }
+  #knot{
+    position:absolute; top:-5px; width:17px; height:17px; border-radius:50%;
+    background:#e8d9b0; border:3px solid #7a5c22; transform:translateX(-50%);
+    box-shadow:0 0 8px rgba(232,217,176,.5), 0 2px 3px rgba(0,0,0,.6);
+    transition:left .6s cubic-bezier(.3,.9,.35,1);
+  }
+
+  #sheet{
+    position:fixed; right:20px; bottom:58px; z-index:5; text-align:right;
+    font:9px/1.7 var(--mono); color:#44566c; letter-spacing:.14em;
+    border-right:2px solid #2c3c50; padding-right:8px;
+  }
+
+  /* ---------- footer strip ---------- */
+  #strip{
+    position:fixed; left:0; right:0; bottom:0; height:46px; z-index:6;
+    background:linear-gradient(#131c29, #0b121d);
+    border-top:1px solid #2c3c50; box-shadow: inset 0 1px 0 rgba(140,170,200,.08);
+    display:flex; align-items:center; justify-content:center; gap:26px;
+    font:11px var(--mono); color:#5d7186; letter-spacing:.1em;
+    text-shadow:0 1px 0 rgba(0,0,0,.8);
+  }
+  #strip a{ color:#9fb2c8; text-decoration:none; border-bottom:1px dotted #44566c; }
+  #strip a:hover{ color:var(--amber); border-bottom-color:var(--amber); }
+  .s-sep{ color:#33445a; }
+  #compass{ width:30px; height:30px; flex:none; animation:spin 90s linear infinite; opacity:.85; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  /* ---------- reduced motion ---------- */
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<svg id="scene" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-label="Topographic map of Mount Kinabalu with expedition trail">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1b3350" stop-opacity=".55"/>
+      <stop offset="60%" stop-color="#122238" stop-opacity=".28"/>
+      <stop offset="100%" stop-color="#0a1420" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="vig" cx="50%" cy="42%" r="75%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="78%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity=".5"/>
+    </radialGradient>
+  </defs>
+  <rect x="-2600" y="-2000" width="7200" height="5600" fill="#070b12"/>
+  <g id="stars"></g>
+  <ellipse cx="1150" cy="1340" rx="1600" ry="500" fill="url(#glow)"/>
+  <g id="contours"></g>
+  <path id="trailpath" class="trail"/>
+  <g id="markers"></g>
+  <g id="cards"></g>
+  <rect x="-2600" y="-2000" width="7200" height="5600" fill="url(#vig)" pointer-events="none"/>
+</svg>
+
+<div id="grid"></div>
+<div id="frame"></div>
+
+<aside id="panel">
+  <div class="phead"><span class="pdot"></span>expedition.log — tail -f</div>
+  <div id="log" aria-live="polite"></div>
+  <div class="pctrl">
+    <button id="prev" title="Previous camp">&#9664; PREV</button>
+    <div id="stopind">STOP 1/6 — KOTA BELUD</div>
+    <button id="next" title="Next camp">NEXT &#9654;</button>
+  </div>
+</aside>
+
+<div id="altbox">
+  <div class="al-label">ALTITUDE</div>
+  <div id="alt">0 m</div>
+  <div class="al-sub">BAROMETRIC &middot; QNH 1013 hPa</div>
+</div>
+
+<div id="rope">
+  <div class="rope-label">ROUTE &middot; 6 STOPS &middot; KINABALU</div>
+  <div class="rope-line" id="ropeline"><div id="knot" style="left:0%"></div></div>
+</div>
+
+<div id="sheet">
+  SHEET 06 &middot; KINABALU MASSIF &middot; SABAH &middot; 1:50 000<br>
+  SURVEY: M. BIN YASSIN &middot; REV 2026-09
+</div>
+
+<footer id="strip">
+  <svg id="compass" viewBox="0 0 40 40" aria-hidden="true">
+    <circle cx="20" cy="20" r="18.5" fill="none" stroke="#44566c" stroke-width="1.5"/>
+    <circle cx="20" cy="20" r="14.5" fill="none" stroke="#33445a" stroke-width=".8"/>
+    <path d="M20 4 L22.5 17.5 L36 20 L22.5 22.5 L20 36 L17.5 22.5 L4 20 L17.5 17.5 Z" fill="#0e1622" stroke="#9fb2c8" stroke-width="1"/>
+    <path d="M20 10 L21.4 18.6 L30 20 L21.4 21.4 L20 30 L18.6 21.4 L10 20 L18.6 18.6 Z" fill="#d9a441" opacity=".85"/>
+    <circle cx="20" cy="20" r="1.6" fill="#e8d9b0"/>
+  </svg>
+  <span>GITHUB <a href="https://github.com/mikhaiIy" target="_blank" rel="noopener">mikhaiIy</a></span>
+  <span class="s-sep">&middot;</span>
+  <span>LINKEDIN <a href="https://www.linkedin.com/in/mikhailyassin" target="_blank" rel="noopener">mikhailyassin</a></span>
+  <span class="s-sep">&middot;</span>
+  <span><a href="mailto:mikhailyassin@proton.me">mikhailyassin@proton.me</a></span>
+</footer>
+
+<script>
+"use strict";
+/* ============================================================
+   MOUNT KINABALU — EXPEDITION LOG
+   Career as a recorded ascent. Everything seeded & deterministic.
+   ============================================================ */
+
+const RM = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const SVGNS = "http://www.w3.org/2000/svg";
+const XHTML = "http://www.w3.org/1999/xhtml";
+
+/* ---------- seeded RNG ---------- */
+function mulberry32(seed){
+  return function(){
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+const rnd = mulberry32(0x4B1AB0); /* K1NAB4U */
+
+/* ---------- world / camera ---------- */
+const CAMW = 1600, CAMH = 900;
+const scene = document.getElementById("scene");
+const cam = { x: 460, y: 1060 };
+const camT = { x: 460, y: 1060 };
+
+function applyCam(){
+  scene.setAttribute("viewBox",
+    (cam.x - CAMW/2).toFixed(1) + " " + (cam.y - CAMH/2).toFixed(1) + " " + CAMW + " " + CAMH);
+}
+function tickCam(){
+  if(!RM){
+    cam.x += (camT.x - cam.x) * 0.065;
+    cam.y += (camT.y - cam.y) * 0.065;
+  } else { cam.x = camT.x; cam.y = camT.y; }
+  applyCam();
+  requestAnimationFrame(tickCam);
+}
+
+/* ---------- path helpers ---------- */
+function smoothClosed(p){
+  const n = p.length; let d = "M" + p[0][0].toFixed(1) + " " + p[0][1].toFixed(1);
+  for(let i = 0; i < n; i++){
+    const p0 = p[(i-1+n)%n], p1 = p[i], p2 = p[(i+1)%n], p3 = p[(i+2)%n];
+    d += "C" +
+      (p1[0]+(p2[0]-p0[0])/6).toFixed(1) + " " + (p1[1]+(p2[1]-p0[1])/6).toFixed(1) + " " +
+      (p2[0]-(p3[0]-p1[0])/6).toFixed(1) + " " + (p2[1]-(p3[1]-p1[1])/6).toFixed(1) + " " +
+      p2[0].toFixed(1) + " " + p2[1].toFixed(1);
+  }
+  return d + "Z";
+}
+function smoothOpen(p){
+  const n = p.length;
+  const e0 = [p[0][0]*2 - p[1][0], p[0][1]*2 - p[1][1]];
+  const eN = [p[n-1][0]*2 - p[n-2][0], p[n-1][1]*2 - p[n-2][1]];
+  const q = [e0].concat(p).concat([eN]);
+  let d = "M" + p[0][0].toFixed(1) + " " + p[0][1].toFixed(1);
+  for(let i = 1; i < n; i++){
+    const p0 = q[i-1], p1 = q[i], p2 = q[i+1], p3 = q[i+2];
+    d += "C" +
+      (p1[0]+(p2[0]-p0[0])/6).toFixed(1) + " " + (p1[1]+(p2[1]-p0[1])/6).toFixed(1) + " " +
+      (p2[0]-(p3[0]-p1[0])/6).toFixed(1) + " " + (p2[1]-(p3[1]-p1[1])/6).toFixed(1) + " " +
+      p2[0].toFixed(1) + " " + p2[1].toFixed(1);
+  }
+  return d;
+}
+
+/* ---------- star field ---------- */
+(function buildStars(){
+  const g = document.getElementById("stars");
+  for(let i = 0; i < 190; i++){
+    const c = document.createElementNS(SVGNS, "circle");
+    c.setAttribute("class", "star");
+    c.setAttribute("cx", (-700 + rnd()*3100).toFixed(1));
+    c.setAttribute("cy", (-500 + rnd()*2300).toFixed(1));
+    c.setAttribute("r", (0.5 + rnd()*1.3).toFixed(2));
+    c.setAttribute("opacity", (0.15 + rnd()*0.6).toFixed(2));
+    g.appendChild(c);
+  }
+  /* a few 4-point sparkles */
+  for(let i = 0; i < 9; i++){
+    const x = -600 + rnd()*2900, y = -400 + rnd()*2100, s = 3 + rnd()*4;
+    const p = document.createElementNS(SVGNS, "path");
+    p.setAttribute("class", "star");
+    p.setAttribute("d", `M${x} ${y-s} L${x+s*0.28} ${y-s*0.28} L${x+s} ${y} L${x+s*0.28} ${y+s*0.28} L${x} ${y+s} L${x-s*0.28} ${y+s*0.28} L${x-s} ${y} L${x-s*0.28} ${y-s*0.28} Z`);
+    p.setAttribute("opacity", (0.35 + rnd()*0.4).toFixed(2));
+    g.appendChild(p);
+  }
+})();
+
+/* ---------- topographic contours ---------- */
+const MASSIF = { cx: 1330, cy: 460 };
+const RING_ALTS = [4095, 3800, 3556, 3272, 3044, 2743, 2400, 2100, 1866, 1560, 1240, 940, 620, 300];
+const LBL_IDX = [0, 3, 5, 8, 10, 12];
+
+function ringPoints(cx, cy, R, harmonics, jitterR, jx, jy){
+  const pts = [];
+  for(let a = 0; a < 72; a++){
+    const th = a / 72 * Math.PI * 2;
+    let w = 0;
+    for(const h of harmonics) w += h.a * Math.sin(h.k * th + h.p);
+    const r = R * (1 + w * (R / 760) + jitterR);
+    pts.push([cx + jx + Math.cos(th) * r, cy + jy + Math.sin(th) * r * 0.82]);
+  }
+  return pts;
+}
+function buildContours(){
+  const g = document.getElementById("contours");
+  const mk = (cx, cy, radii, squashShared) => {
+    const harmonics = [];
+    for(let k = 0; k < 6; k++){
+      harmonics.push({
+        k: k + 1,
+        a: (0.052 - k * 0.0065) * (0.7 + rnd() * 0.6),
+        p: rnd() * Math.PI * 2
+      });
+    }
+    radii.forEach((R, i) => {
+      const pts = ringPoints(cx, cy, R, harmonics,
+        (rnd() - 0.5) * 0.022, (rnd() - 0.5) * R * 0.04, (rnd() - 0.5) * R * 0.03);
+      const path = document.createElementNS(SVGNS, "path");
+      path.setAttribute("class", "contour" + (i % 4 === 0 ? " idx" : ""));
+      path.setAttribute("d", smoothClosed(pts));
+      g.appendChild(path);
+      if(squashShared && LBL_IDX.indexOf(i) >= 0){
+        const th = -0.96; /* upper-right flank */
+        const tx = cx + Math.cos(th) * R * 1.01;
+        const ty = cy + Math.sin(th) * R * 0.82;
+        const t = document.createElementNS(SVGNS, "text");
+        t.setAttribute("class", "contlbl");
+        t.setAttribute("x", tx.toFixed(1));
+        t.setAttribute("y", ty.toFixed(1));
+        t.textContent = RING_ALTS[i] + "m";
+        g.appendChild(t);
+      }
+    });
+  };
+  /* main massif — Low's Peak */
+  const radii = []; for(let r = 55; r <= 520; r += 35) radii.push(r);
+  mk(MASSIF.cx, MASSIF.cy, radii, true);
+  /* eastern spur — secondary rise */
+  const radii2 = []; for(let r = 38; r <= 224; r += 31) radii2.push(r);
+  mk(1655, 730, radii2, false);
+  /* western foothill lump */
+  const radii3 = []; for(let r = 30; r <= 130; r += 25) radii3.push(r);
+  mk(940, 850, radii3, false);
+}
+buildContours();
+
+/* ---------- expedition stops ---------- */
+const STOPS = [
+  {
+    num: "BC", name: "KOTA BELUD", sub: "base camp · trailhead", x: 330, y: 990, alt: 0,
+    focus: { x: 460, y: 800 },
+    card: { dx: 30, dy: -330, coords: "06.0712° N · 116.4318° E", dates: "EST. 2002 → PRESENT",
+      metric: "ELEV 0 M · START OF ROUTE",
+      line: "Hometown below the massif. The summit was visible from the school field — the route starts wherever you are standing." },
+    log: [
+      { t: "D01 05:41:00", tag: "base", m: "kota belud, sabah — dawn, sea of clouds below, massif above" },
+      { t: "D01 05:41:07", tag: "base", m: "route filed: 6 stops, 1 summit, no switchback refused" },
+      { t: "D01 05:41:15", tag: "crew", m: "traveler: mikhail bin yassin — data engineer, bsc 2026" },
+      { t: "D01 05:41:22", tag: "sys", m: "log stream attached. scroll or NEXT to advance camp ▸" }
+    ]
+  },
+  {
+    num: "1", name: "UITM DENGKIL", sub: "foundation · camp 1", x: 560, y: 920, alt: 812,
+    focus: { x: 500, y: 950 },
+    card: { dx: 30, dy: -96, coords: "02.9412° N · 101.6290° E", dates: "2020 → 2021",
+      metric: "CGPA 4.00 / 4.00",
+      line: "Foundation in Engineering. Learned that altitude is earned one credit at a time — carried a perfect slope out of base camp." },
+    log: [
+      { t: "D02 07:02:11", tag: "camp1", m: "uitm dengkil — foundation in engineering, camp established" },
+      { t: "D02 07:02:19", tag: "grade", m: "cgpa 4.00/4.00 — full carry to the ridge line" },
+      { t: "D02 07:02:26", tag: "note", m: "matrices, circuits, and the first taste of real altitude" }
+    ]
+  },
+  {
+    num: "2", name: "UTM JOHOR BAHRU", sub: "bsc data engineering · camp 2", x: 800, y: 800, alt: 1866,
+    focus: { x: 740, y: 830 },
+    card: { dx: 30, dy: -96, coords: "01.5584° N · 103.6372° E", dates: "OCT 2021 → OCT 2026",
+      metric: "CGPA 3.85 · BSc CS (DATA ENG)",
+      line: "Four years of pipelines and packets at UTM JB. Led two Work-Based Learning teams — both voted Best Group." },
+    log: [
+      { t: "D03 09:15:02", tag: "camp2", m: "universiti teknologi malaysia, johor bahru — long climb" },
+      { t: "D03 09:15:10", tag: "grade", m: "bsc cs (data engineering), cgpa 3.85 — oct 2021 → oct 2026" },
+      { t: "D03 09:15:18", tag: "load", m: "sql · python · pyspark · postgresql · clickhouse · bash · linux" },
+      { t: "D03 09:15:27", tag: "lead", m: "2× work-based learning teams — both voted best group" }
+    ]
+  },
+  {
+    num: "3", name: "FYP CAMP", sub: "dag etl scheduler · camp 3", x: 1020, y: 680, alt: 2743,
+    focus: { x: 960, y: 710 },
+    card: { dx: 30, dy: -96, coords: "05.8831° N · 114.2210° E (MAPPED)", dates: "2025 → 2026",
+      metric: "DAG SCHEDULER · 0 MISSED RUNS",
+      line: "Final-Year Project: a DAG-based ETL scheduling system. Built my own orchestrator — waiting for cron felt like base-camp boredom." },
+    log: [
+      { t: "D04 11:48:33", tag: "camp3", m: "high camp — thin air, dependencies everywhere" },
+      { t: "D04 11:48:41", tag: "build", m: '"design & implementation of a dag-based etl scheduling system"' },
+      { t: "D04 11:48:50", tag: "feat", m: "dag definition · retries · topological execution · custom orchestration" },
+      { t: "D04 11:48:58", tag: "sys", m: "defended. summit ridge now visible from camp" }
+    ]
+  },
+  {
+    num: "4", name: "U MOBILE RIDGE", sub: "data engineering intern · camp 4", x: 1170, y: 580, alt: 3272,
+    focus: { x: 1110, y: 610 },
+    card: { dx: 30, dy: -96, coords: "03.1285° N · 101.5108° E", dates: "NOV 2025 → AUG 2026",
+      metric: "~2,000,000,000 CDR ROWS / DAY",
+      line: "Nine months on the ridge at U Mobile — PySpark ETL for billing, activation and reconciliation, requirement to UAT to production." },
+    log: [
+      { t: "D05 13:30:04", tag: "camp4", m: "u mobile — data science & campaign value management dept" },
+      { t: "D05 13:30:12", tag: "time", m: "9 months on the ridge (nov 2025 → aug 2026), data engineering intern" },
+      { t: "D05 13:30:21", tag: "thpt", m: "~2,000,000,000 cdr rows/day processed via pyspark — cloud daas poc" },
+      { t: "D05 13:30:30", tag: "ops", m: "billing/activation/reconciliation etl: requirements → uat → production" },
+      { t: "D05 13:30:39", tag: "xtra", m: "clickstack monitoring dashboard poc · variance alerts · secure transfers" }
+    ]
+  },
+  {
+    num: "LP", name: "LOW'S PEAK", sub: "4,095 m · ??? — hiring now", x: 1310, y: 465, alt: 4095,
+    focus: { x: 1250, y: 495 },
+    card: { dx: -205, dy: -258, coords: "06.0752° N · 116.5583° E", dates: "NEXT EXPEDITION — T.B.D.",
+      metric: "4,095 M · SUMMIT", cta: { href: "mailto:mikhailyassin@proton.me", label: "▸ CONTACT — HIRING NOW" },
+      line: "The map ends here. The next expedition has no name yet — maybe it is your team. Hiring now." },
+    log: [
+      { t: "D06 05:58:47", tag: "summit", m: "low's peak — 4,095 m. granite, wind, and one open variable" },
+      { t: "D06 05:58:55", tag: "next", m: 'the next expedition has no name yet — "???" — hiring now' },
+      { t: "D06 05:59:03", tag: "cta", m: "mikhailyassin@proton.me · github/mikhaiIy · linkedin/mikhailyassin" },
+      { t: "D06 05:59:10", tag: "sys", m: "end of log. the mountain is still there. ▲" }
+    ]
+  }
+];
+
+/* ---------- trail ---------- */
+(function buildTrail(){
+  const pts = [
+    [330, 990], [395, 972], [470, 948], [560, 920],
+    [640, 898], [676, 862], [736, 834], [800, 800],
+    [878, 776], [924, 736], [972, 708], [1020, 680],
+    [1082, 656], [1114, 618], [1170, 580],
+    [1218, 548], [1256, 508], [1310, 465]
+  ];
+  document.getElementById("trailpath").setAttribute("d", smoothOpen(pts));
+})();
+
+/* ---------- markers ---------- */
+const markerEls = [];
+(function buildMarkers(){
+  const g = document.getElementById("markers");
+  STOPS.forEach((s, i) => {
+    const grp = document.createElementNS(SVGNS, "g");
+    grp.setAttribute("class", "mk");
+    grp.setAttribute("transform", `translate(${s.x} ${s.y})`);
+
+    const pole = document.createElementNS(SVGNS, "line");
+    pole.setAttribute("class", "pole");
+    pole.setAttribute("x1", 0); pole.setAttribute("y1", 4);
+    pole.setAttribute("x2", 0); pole.setAttribute("y2", -26);
+    grp.appendChild(pole);
+
+    const pen = document.createElementNS(SVGNS, "path");
+    pen.setAttribute("class", "pennant");
+    pen.setAttribute("d", i === 5 ? "M0 -26 L24 -20 L0 -13 Z" : "M0 -26 L19 -21 L0 -15 Z");
+    grp.appendChild(pen);
+
+    const plate = document.createElementNS(SVGNS, "circle");
+    plate.setAttribute("class", "plate");
+    plate.setAttribute("cx", 0); plate.setAttribute("cy", 14); plate.setAttribute("r", 10);
+    grp.appendChild(plate);
+
+    const num = document.createElementNS(SVGNS, "text");
+    num.setAttribute("class", "pnum");
+    num.setAttribute("x", 0); num.setAttribute("y", 18);
+    num.textContent = s.num;
+    grp.appendChild(num);
+
+    const nm = document.createElementNS(SVGNS, "text");
+    nm.setAttribute("class", "mname");
+    nm.setAttribute("x", 4); nm.setAttribute("y", -36);
+    nm.textContent = s.name;
+    grp.appendChild(nm);
+
+    const sb = document.createElementNS(SVGNS, "text");
+    sb.setAttribute("class", "msub");
+    sb.setAttribute("x", 4); sb.setAttribute("y", -52);
+    sb.textContent = s.sub.toUpperCase();
+    grp.appendChild(sb);
+
+    const hit = document.createElementNS(SVGNS, "circle");
+    hit.setAttribute("class", "hit");
+    hit.setAttribute("cx", 0); hit.setAttribute("cy", 0); hit.setAttribute("r", 30);
+    hit.addEventListener("click", () => goTo(i));
+    grp.appendChild(hit);
+
+    g.appendChild(grp);
+    markerEls.push(grp);
+  });
+})();
+
+/* ---------- survey cards ---------- */
+const cardEls = [];
+(function buildCards(){
+  const g = document.getElementById("cards");
+  STOPS.forEach((s) => {
+    const fo = document.createElementNS(SVGNS, "foreignObject");
+    fo.setAttribute("x", s.x + s.card.dx);
+    fo.setAttribute("y", s.y + s.card.dy);
+    fo.setAttribute("width", 300);
+    fo.setAttribute("height", 270);
+    fo.style.overflow = "visible";
+
+    const div = document.createElementNS(XHTML, "div");
+    div.className = "card";
+    let h = `<div class="c-stamp">${s.card.cta ? "OPEN" : "SURVEYED"}</div>`;
+    h += `<h4>${s.name}</h4><div class="c-sub">${s.sub.toUpperCase()}</div>`;
+    h += `<div class="c-row"><span>COORD</span><b>${s.card.coords}</b></div>`;
+    h += `<div class="c-row"><span>PERIOD</span><b>${s.card.dates}</b></div>`;
+    h += `<div class="c-row"><span>KEY</span><b>${s.card.metric}</b></div>`;
+    h += `<p>${s.card.line}</p>`;
+    if(s.card.cta) h += `<a class="c-cta" href="${s.card.cta.href}">${s.card.cta.label}</a>`;
+    div.innerHTML = h;
+    fo.appendChild(div);
+    g.appendChild(fo);
+    cardEls.push(div);
+  });
+})();
+
+/* ---------- expedition log (typing stream) ---------- */
+const logEl = document.getElementById("log");
+const cursorEl = document.createElement("span");
+cursorEl.className = "cursor";
+let typeToken = 0;
+let curLine = null; /* { el, full } — finalized if interrupted */
+
+function makeLine(L){
+  const div = document.createElement("div");
+  const t = document.createElement("span"); t.className = "lt"; t.textContent = L.t + " ";
+  const tag = document.createElement("span"); tag.className = "ltag"; tag.textContent = "[" + L.tag + "] ";
+  const m = document.createElement("span"); m.className = "lm";
+  div.appendChild(t); div.appendChild(tag); div.appendChild(m);
+  return { div, m };
+}
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+async function streamStop(stop){
+  const tk = ++typeToken;
+  if(curLine){ curLine.m.textContent = curLine.full; curLine = null; }
+  for(const L of stop.log){
+    if(tk !== typeToken) return;
+    const { div, m } = makeLine(L);
+    logEl.insertBefore(div, cursorEl.parentNode === logEl ? cursorEl : null);
+    logEl.scrollTop = logEl.scrollHeight;
+    if(RM){
+      m.textContent = L.m;
+    } else {
+      curLine = { m, full: L.m };
+      for(let c = 0; c < L.m.length; c++){
+        if(tk !== typeToken) return;
+        m.textContent += L.m[c];
+        logEl.scrollTop = logEl.scrollHeight;
+        await sleep(9);
+      }
+      curLine = null;
+      await sleep(140);
+    }
+  }
+  while(logEl.children.length > 170) logEl.removeChild(logEl.firstChild);
+}
+
+/* ---------- altitude readout ---------- */
+const altEl = document.getElementById("alt");
+let altShown = 0, altAnim = null;
+function fmtAlt(v){ return Math.round(v).toLocaleString("en-US") + " m"; }
+function animateAlt(to){
+  if(altAnim) cancelAnimationFrame(altAnim);
+  if(RM){ altShown = to; altEl.textContent = fmtAlt(to); return; }
+  const from = altShown, t0 = performance.now(), dur = 950;
+  const step = now => {
+    const k = Math.min(1, (now - t0) / dur);
+    const e = 1 - Math.pow(1 - k, 3);
+    altShown = from + (to - from) * e;
+    altEl.textContent = fmtAlt(altShown);
+    if(k < 1) altAnim = requestAnimationFrame(step);
+  };
+  altAnim = requestAnimationFrame(step);
+}
+
+/* ---------- rope progress ---------- */
+const ropeLine = document.getElementById("ropeline");
+STOPS.forEach((s, i) => {
+  const t = document.createElement("div");
+  t.className = "tick";
+  t.style.left = (i / (STOPS.length - 1) * 100) + "%";
+  ropeLine.insertBefore(t, document.getElementById("knot"));
+});
+
+/* ---------- navigation ---------- */
+const stopInd = document.getElementById("stopind");
+let idx = -1;
+
+function goTo(i, force){
+  i = Math.max(0, Math.min(STOPS.length - 1, i));
+  if(i === idx && !force) return;
+  idx = i;
+  const s = STOPS[i];
+
+  camT.x = s.focus.x; camT.y = s.focus.y;
+  if(RM){ cam.x = camT.x; applyCam(); }
+
+  markerEls.forEach((el, j) => el.classList.toggle("active", j === i));
+  cardEls.forEach((el, j) => el.classList.toggle("show", j === i));
+
+  stopInd.textContent = `STOP ${i + 1}/6 — ${s.name}`;
+  document.getElementById("knot").style.left = (i / (STOPS.length - 1) * 100) + "%";
+  animateAlt(s.alt);
+  streamStop(s);
+}
+
+document.getElementById("next").addEventListener("click", () => goTo(idx + 1));
+document.getElementById("prev").addEventListener("click", () => goTo(idx - 1));
+
+window.addEventListener("keydown", e => {
+  if(e.key === "ArrowDown" || e.key === "ArrowRight" || e.key === "PageDown"){ goTo(idx + 1); e.preventDefault(); }
+  else if(e.key === "ArrowUp" || e.key === "ArrowLeft" || e.key === "PageUp"){ goTo(idx - 1); e.preventDefault(); }
+});
+
+/* wheel: advance/rewind stops (log panel keeps its own scroll) */
+let wAcc = 0, wCool = 0;
+window.addEventListener("wheel", e => {
+  if(e.target && e.target.closest && e.target.closest("#panel")) return;
+  const now = Date.now();
+  if(now < wCool) return;
+  wAcc += e.deltaY;
+  if(Math.abs(wAcc) > 90){
+    goTo(idx + (wAcc > 0 ? 1 : -1));
+    wAcc = 0; wCool = now + 700;
+  }
+}, { passive: true });
+
+/* ---------- boot ---------- */
+applyCam();
+requestAnimationFrame(tickCam);
+goTo(0, true);
+</script>
+</body>
+</html>

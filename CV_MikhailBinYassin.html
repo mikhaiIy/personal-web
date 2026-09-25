@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mikhail Bin Yassin — Data Engineer CV</title>
+<style>
+  @page { size: A4; margin: 14mm 15mm; }
+  :root { --ink:#18212b; --muted:#52606d; --line:#d8dee5; --accent:#0b5cab; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Arial, Helvetica, sans-serif; color:var(--ink); font-size:10.3pt; line-height:1.35; }
+  h1 { margin:0; font-size:22pt; letter-spacing:.2pt; }
+  h2 { margin:13pt 0 5pt; padding-bottom:3pt; border-bottom:1.2pt solid var(--accent); color:var(--accent); font-size:11.5pt; text-transform:uppercase; letter-spacing:.8pt; }
+  h3 { margin:0 0 2pt; font-size:10.8pt; }
+  p { margin:2pt 0; }
+  ul { margin:3pt 0 5pt; padding-left:16pt; }
+  li { margin:1.5pt 0; }
+  .head { border-bottom:2.5pt solid var(--ink); padding-bottom:8pt; }
+  .role { margin-top:2pt; color:var(--muted); font-size:11pt; }
+  .contact { margin-top:6pt; font-size:9.3pt; }
+  .contact span { display:inline-block; margin-right:14pt; white-space:nowrap; }
+  .row { display:flex; justify-content:space-between; gap:12pt; align-items:baseline; }
+  .meta { color:var(--muted); font-size:9.3pt; white-space:nowrap; }
+  .entry { margin:0 0 8pt; }
+  .entry:last-child { margin-bottom:0; }
+  .bullets strong { font-weight:bold; }
+  .skills { margin:2pt 0 0; }
+  .skills b { color:var(--ink); }
+  .compact li { margin:1pt 0; }
+  .right { float:right; color:var(--muted); font-size:9.3pt; }
+  .clear { clear:both; }
+  .note { color:var(--muted); font-size:9pt; }
+  a { color:var(--accent); text-decoration:none; }
+  @media screen { body { max-width:800px; margin:24px auto; padding:0 24px; } }
+</style>
+</head>
+<body>
+<header class="head">
+  <h1>MIKHAIL BIN YASSIN</h1>
+  <div class="role">Data Engineer · ETL &amp; Big Data · Workflow Orchestration</div>
+  <div class="contact">
+    <span>+60 12-887 1846</span>
+    <span>mikhailyassin@proton.me</span>
+    <span>GitHub: mikhaiIy</span>
+    <span>LinkedIn: mikhailyassin</span>
+    <span>Kota Belud, Sabah, Malaysia</span>
+  </div>
+</header>
+
+<section>
+  <h2>Professional Summary</h2>
+  <p>Data Engineer with a Bachelor of Computer Science in Data Engineering and nine months of hands-on experience building and deploying PySpark and Python ETL pipelines for telecom billing, activation, and reconciliation reporting. Experienced in processing approximately 2 billion CDR rows per day, investigating billing discrepancies, and automating operational workflows on an on-premise big-data platform. Built a DAG-based ETL scheduling system as a final-year project and developed full-stack web applications with real users. Comfortable working across SQL, Python, PySpark, Linux, Bash, ClickHouse, PostgreSQL, Git, and cloud data workflows.</p>
+</section>
+
+<section>
+  <h2>Core Competencies</h2>
+  <p class="skills"><b>Data engineering:</b> ETL development · big-data processing · workflow orchestration · database design · data analysis &amp; reporting · system design</p>
+  <p class="skills"><b>Tools &amp; technologies:</b> Python · PySpark · SQL · PostgreSQL · ClickHouse · Bash/Shell · Linux · Git · OpenTelemetry · AWS</p>
+  <p class="skills"><b>Platforms &amp; interests:</b> real-time data processing · cloud data systems · observability dashboards · agentic engineering · applied AI</p>
+</section>
+
+<section>
+  <h2>Professional Experience</h2>
+  <div class="entry">
+    <div class="row"><h3>U Mobile — Data Science &amp; Campaign Value Management</h3><div class="meta">Johor Bahru, Malaysia · Nov 2025 – Aug 2026</div></div>
+    <p><b>Data Engineering Intern · 9 months</b></p>
+    <ul>
+      <li>Designed, developed, and deployed <strong>PySpark and Python ETL pipelines</strong> for billing, activation, and reconciliation reporting on an on-premise big-data platform, covering requirements gathering, UAT, and production deployment.</li>
+      <li>Processed approximately <strong>2 billion CDR rows per day</strong> with PySpark to prepare curated datasets for a cloud DaaS proof of concept with an external vendor.</li>
+      <li>Investigated inter-operator billing discrepancies and settlement reports, identifying root causes and supporting data-driven resolution.</li>
+      <li>Improved operational automation through secure cloud file transfers, variance-alert emails, and file-permission management.</li>
+      <li>Contributed to a centralised platform-monitoring dashboard proof of concept using <strong>ClickStack</strong>.</li>
+      <li>Supported legacy-platform migration, server operations, and internal knowledge-sharing sessions.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>Selected Projects</h2>
+  <div class="entry">
+    <div class="row"><h3>Design &amp; Implementation of a DAG-based ETL Scheduling System</h3><div class="meta">Final-Year Project · 2025–2026</div></div>
+    <p><b>Research and engineering project — Universiti Teknologi Malaysia</b></p>
+    <ul>
+      <li>Designed a custom pipeline-orchestration system that models ETL dependencies as a directed acyclic graph and dispatches tasks when their dependencies complete.</li>
+      <li>Implemented graph validation, topological ordering, and completion-based dispatch, with automated graph and schema tests.</li>
+      <li>Produced a public research summary covering the scheduling approach and system design; full end-to-end runtime validation remains pending.</li>
+    </ul>
+  </div>
+  <div class="entry">
+    <div class="row"><h3><a href="https://github.com/mikhaiIy/Kindergarden-Management-System">Kindergarden Management System — Intellect Playschool</a></h3><div class="meta">Work-Based Learning · 2024</div></div>
+    <p><b>University Work-Based Learning project · Team Lead</b></p>
+    <ul>
+      <li>Led a four-person team in developing a web application for Intellect Playschool, a kindergarten in Pulai Mutiara, Johor Bahru, under university supervision.</li>
+      <li>Contributed to the application design and delivery for a real education centre; the team was selected as the <strong>Best Group</strong> for the semester.</li>
+      <li>Public repository: <a href="https://github.com/mikhaiIy/Kindergarden-Management-System">github.com/mikhaiIy/Kindergarden-Management-System</a></li>
+    </ul>
+  </div>
+  <div class="entry">
+    <div class="row"><h3><a href="https://github.com/mikhaiIy/RehabConnect">RehabConnect — Autism Education Centre Management System</a></h3><div class="meta">Work-Based Learning · 2025</div></div>
+    <p><b>University Work-Based Learning project · Team Lead</b></p>
+    <ul>
+      <li>Led a four-person team in building a web application for a local autism education centre in Johor Bahru.</li>
+      <li>Managed technical delivery and knowledge sharing; the project was supervised by Mr. Syukry Radzi, CEO of Cloudswired Technologies.</li>
+      <li>The team was selected as the <strong>Best Group</strong> for the semester. Public repository: <a href="https://github.com/mikhaiIy/RehabConnect">github.com/mikhaiIy/RehabConnect</a></li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>Education</h2>
+  <div class="entry">
+    <div class="row"><h3>Universiti Teknologi Malaysia, Johor Bahru</h3><div class="meta">Oct 2021 – Oct 2026</div></div>
+    <p><b>Bachelor of Computer Science (Data Engineering)</b> · CGPA 3.85</p>
+  </div>
+  <div class="entry">
+    <div class="row"><h3>Universiti Institusi Teknologi MARA, Dengkil</h3><div class="meta">Jul 2020 – May 2021</div></div>
+    <p><b>Foundation in Engineering</b> · CGPA 4.00</p>
+  </div>
+</section>
+
+<section>
+  <h2>Certifications</h2>
+  <ul class="compact">
+    <li>AWS Academy Data Engineering</li>
+    <li>AWS Academy Cloud Architecting</li>
+    <li>Google AI Professional</li>
+    <li>Microsoft Certified: Azure Data Fundamentals</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Leadership &amp; Activities</h2>
+  <ul class="compact">
+    <li><b>Faculty of Computing Research &amp; Innovation Day (FCRI 2025) — Showcase Planning Team Lead:</b> Led five people handling communications with Finexus Group Sdn. Bhd. for a potential product showcase booth.</li>
+    <li><b>Sukan Fakulti Komputeraan 2023 (SUSKOM'23) — Multimedia Team Lead:</b> Led five people in multimedia content and event coverage.</li>
+    <li><b>Kolej Tun Dr Ismail Earth Day 2023 — Multimedia Team Lead:</b> Supervised a five-person team delivering promotional multimedia materials.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Languages</h2>
+  <p>Malay — Native · English — Proficient</p>
+</section>
+</body>
+</html>

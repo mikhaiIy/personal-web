@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mikhail's Home Page!!! (view-source edition)</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%231a1815'/><circle cx='16' cy='16' r='10' fill='none' stroke='%23d8ff3d' stroke-width='3'/><circle cx='16' cy='16' r='3' fill='%23d8ff3d'/></svg>">
+<script>window.addEventListener('error',function(e){(window.__errs=window.__errs||[]).push(String(e.message))});</script>
+<style>
+/* ============================================================
+   beta-lens — "view-source of a person"
+   layer 1 (#surface): sincere late-90s personal homepage
+   layer 2 (#modern):  the same skeleton, rendered as a 2026
+                       data-engineer portfolio, revealed
+                       through a cursor lens
+   alignment strategy: both layers share ONE structural
+   skeleton (identical markup classes, identical paddings,
+   identical column grid); paired sections are height-synced
+   by JS at load/resize, so geometry matches by construction.
+   ============================================================ */
+
+@property --r { syntax: '<length>'; inherits: false; initial-value: 190px; }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --acc: #d8ff3d;                 /* single accent: chartreuse */
+  --ink: #ece7dc;                 /* warm off-white            */
+  --dim: #8f8677;                 /* warm grey labels          */
+  --hair: #2b2722;                /* hairline                  */
+  --char: #1a1815;                /* warm charcoal             */
+  --char2: #201d19;               /* panel charcoal            */
+}
+
+html { background: #cfccc0; }
+body {
+  font-size: 16px;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.035) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,.035) 0 1px, transparent 1px 28px),
+    #cfccc0;
+}
+
+/* ---------- shared structural skeleton (both layers) ---------- */
+
+.stack {
+  position: relative;
+  width: min(880px, 94vw);
+  margin: 30px auto 56px;
+}
+
+.page { padding: 4px; }
+
+/* two-column "table" layout: fixed columns so both layers split identically */
+.cols { display: grid; grid-template-columns: 206px 1fr; align-items: stretch; }
+.cols > * { min-width: 0; }
+
+.sec { padding: 20px 26px; position: relative; }
+#modern .sec { overflow: hidden; }
+
+.panel { padding: 14px 18px; }
+
+.cols .side { display: flex; flex-direction: column; }
+.cols .maincol { display: flex; flex-direction: column; }
+
+/* ---------- layer 2: the lens mask ---------- */
+
+#modern {
+  position: absolute; inset: 0; z-index: 2;
+  pointer-events: none; user-select: none;
+  --r: 190px;
+  -webkit-mask-image: radial-gradient(circle var(--r) at var(--mx, 50%) var(--my, 45%), #000 97%, transparent 100%);
+          mask-image: radial-gradient(circle var(--r) at var(--mx, 50%) var(--my, 45%), #000 97%, transparent 100%);
+  transition: --r .5s cubic-bezier(.2,.8,.2,1);
+}
+body.full #modern { --r: 2600px; }
+@media (prefers-reduced-motion: reduce) { #modern { transition: none; } }
+
+/* ---------- floating lens ring ---------- */
+
+#ring {
+  position: fixed; left: 0; top: 0; width: 380px; height: 380px;
+  border-radius: 50%; pointer-events: none; z-index: 5;
+  border: 1px solid rgba(216,255,61,.55);
+  box-shadow: 0 0 26px rgba(216,255,61,.16), inset 0 0 34px rgba(216,255,61,.07);
+  transform: translate(-50%,-50%);
+}
+body.full #ring, body.idle #ring { opacity: 0; }
+#ring { transition: opacity .3s; }
+
+/* ---------- HUD chip ---------- */
+
+#chip {
+  position: fixed; left: 0; top: 0; z-index: 6; pointer-events: none;
+  display: flex; gap: 10px; align-items: baseline;
+  padding: 8px 12px; max-width: 340px;
+  background: rgba(20,19,16,.78);
+  -webkit-backdrop-filter: blur(9px); backdrop-filter: blur(9px);
+  border: 1px solid rgba(216,255,61,.32);
+  border-radius: 6px;
+  font: 11px/1.45 ui-monospace, "Cascadia Mono", Menlo, Consolas, "Courier New", monospace;
+  opacity: 0; transition: opacity .25s;
+}
+#chip.on { opacity: 1; }
+#chip i { font-style: normal; color: var(--acc); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+#chip b { font-weight: 400; color: #e8e2d4; }
+
+/* ---------- idle hint pill ---------- */
+
+#pill {
+  position: fixed; left: 50%; top: 56%; transform: translate(-50%,-50%);
+  z-index: 7; pointer-events: none;
+  padding: 10px 18px;
+  background: rgba(20,19,16,.82);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border: 1px solid rgba(216,255,61,.35);
+  border-radius: 999px;
+  font: 12px ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  color: var(--acc); letter-spacing: .06em;
+  opacity: 0; transition: opacity .35s;
+}
+body.idle #pill { opacity: 1; }
+body.full #pill { opacity: 0; }
+
+/* ---------- corner toggle ---------- */
+
+#toggle {
+  position: fixed; right: 18px; top: 16px; z-index: 8;
+  font: 12px ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  color: #55503f; background: rgba(255,255,250,.55);
+  border: 1px solid rgba(0,0,0,.25); border-radius: 4px;
+  padding: 6px 10px; cursor: pointer;
+}
+#toggle:hover { color: #111; }
+#toggle[aria-pressed="true"] {
+  color: #1a1815; background: var(--acc);
+  border-color: #1a1815;
+}
+
+/* ============================================================
+   LAYER 1 — #surface : the retro homepage
+   ============================================================ */
+
+#surface {
+  position: relative; z-index: 1;
+  font-family: "Times New Roman", Times, serif;
+  color: #14110a;
+}
+
+#surface .page {
+  background: #fdf3d7;
+  border: 2px ridge #a89f86;
+  box-shadow: 6px 8px 0 rgba(60,50,20,.18);
+}
+
+#surface .panel {
+  background: #fffbea;
+  border: 2px inset #cfc5a8;
+}
+
+#surface h1 {
+  text-align: center; font-size: 30px; margin: 10px 0 2px;
+  color: #000080; letter-spacing: .5px;
+}
+#surface .hello { text-align: center; font-style: italic; margin: 0 0 10px; color: #55503c; }
+#surface h2 { text-align: center; font-size: 21px; margin: 0 0 6px; color: #000080; }
+#surface h3 { font-size: 17px; margin: 0 0 4px; color: #000080; }
+#surface p, #surface li, #surface td { font-size: 15.5px; line-height: 1.45; }
+#surface ul { list-style: square; padding-left: 22px; }
+#surface hr { border: none; border-top: 1px solid #b8ad8a; margin: 10px 0; }
+
+#surface a { color: #0000ee; }
+#surface a:visited { color: #551a8b; }
+#surface a:hover { color: #ee0000; text-decoration: underline; }
+
+#surface .mono { font-family: "Courier New", Courier, monospace; }
+#surface .tiny { font-size: 12.5px; color: #6b6450; }
+#surface .ctr { text-align: center; }
+
+#surface .blink { animation: bl 1.2s steps(1) infinite; }
+@keyframes bl { 0%, 54% { visibility: visible; } 55%, 100% { visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) { #surface .blink { animation: none; } }
+
+#surface .badge-new {
+  display: inline-block; font: bold 10.5px "Courier New", monospace;
+  color: #fff; background: #cc0000; padding: 1px 5px; margin-left: 6px;
+  border: 1px solid #7a0000; vertical-align: middle;
+  animation: bl 1.6s steps(1) infinite;
+}
+@media (prefers-reduced-motion: reduce) { #surface .badge-new { animation: none; } }
+
+#surface .skl { width: 100%; border-collapse: collapse; font-family: "Courier New", monospace; font-size: 13.5px; }
+#surface .skl td { padding: 2.5px 4px; white-space: nowrap; }
+#surface .skl td:first-child { width: 128px; color: #000080; font-weight: bold; }
+#surface .skl .bar { color: #006600; }
+
+#surface .jour { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+#surface .jour td { border: 1px solid #c7bc9c; padding: 6px 9px; vertical-align: top; }
+#surface .jour td:first-child { width: 148px; background: #f3e9c8; font-weight: bold; white-space: nowrap; }
+#surface .jour th { background: #000080; color: #fffbea; font-size: 13px; padding: 5px 9px; text-align: left; }
+
+/* sidebar widgets */
+
+#surface .led {
+  background: #101010; border: 3px outset #6b6656; padding: 5px 12px;
+  text-align: center; margin: 6px auto; width: max-content;
+  font: bold 20px "Courier New", monospace; letter-spacing: 3px;
+  color: #45ff5e; text-shadow: 0 0 7px rgba(69,255,94,.85);
+}
+#surface .widget { text-align: center; margin: 10px 0; }
+#surface .badge-800 {
+  display: inline-block; border: 2px outset #cf9; background: #efefc9;
+  font: bold 11px "MS Sans Serif", Tahoma, Geneva, sans-serif;
+  padding: 4px 7px; color: #333;
+}
+#surface .pager {
+  display: block; background: #101010; color: #45ff5e;
+  border: 3px outset #6b6656; padding: 7px 10px; margin: 8px 0;
+  font: bold 11.5px "Courier New", monospace; letter-spacing: .05em;
+  text-align: center;
+}
+
+/* under-construction barricade — pure CSS */
+
+#surface .uc { position: relative; width: 150px; height: 100px; margin: 10px auto 0; }
+#surface .uc-lamp {
+  position: absolute; left: 50%; top: 0; width: 10px; height: 10px; margin-left: -5px;
+  border-radius: 50%; background: #ff2d2d;
+  box-shadow: 0 0 9px 2px rgba(255,45,45,.75);
+  animation: lamp 1s steps(1) infinite;
+}
+@keyframes lamp { 0%, 49% { opacity: 1; } 50%, 100% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { #surface .uc-lamp { animation: none; } }
+#surface .uc-board {
+  position: absolute; left: 0; right: 0; top: 24px; height: 36px;
+  border: 3px solid #1c1b18; border-radius: 3px;
+  background: repeating-linear-gradient(45deg, #ffd21e 0 10px, #1c1b18 10px 20px);
+}
+#surface .uc-board span {
+  position: absolute; inset: 4px; display: grid; place-items: center;
+  background: #1c1b18; color: #ffd21e;
+  font: bold 9.5px "Courier New", monospace; letter-spacing: .09em;
+  border: 1px solid #ffd21e;
+}
+#surface .uc::before, #surface .uc::after {
+  content: ""; position: absolute; top: 60px; width: 8px; height: 40px; background: #1c1b18;
+}
+#surface .uc::before { left: 24px; transform: skewX(-14deg); }
+#surface .uc::after  { right: 24px; transform: skewX(14deg); }
+
+#surface .ringline { text-align: center; font-size: 15px; margin: 6px 0; }
+
+/* retro marquee */
+
+#surface .mq-static { display: none; text-align: center; color: #55503c; font-style: italic; }
+@media (prefers-reduced-motion: reduce) {
+  #surface marquee { display: none; }
+  #surface .mq-static { display: block; }
+}
+
+/* retro dial-up status bar */
+
+#dialup {
+  position: fixed; left: 14px; bottom: 14px; z-index: 8;
+  background: #101010; color: #45ff5e;
+  border: 2px outset #6b6656; padding: 6px 12px;
+  font: bold 12px "Courier New", monospace; letter-spacing: .04em;
+  min-width: 210px;
+}
+
+/* ============================================================
+   LAYER 2 — #modern : the 2026 portfolio
+   ============================================================ */
+
+#modern .page {
+  background: var(--char);
+  border: 2px solid var(--hair);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+#modern .panel {
+  background: var(--char2);
+  border: 2px solid var(--hair);
+}
+
+#modern .lab {
+  font: 600 10.5px/1.5 ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--dim);
+}
+#modern .lab-acc { color: var(--acc); }
+
+/* hero */
+
+#modern .m-top {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  border-bottom: 1px solid var(--hair); padding-bottom: 9px; margin-bottom: 14px;
+}
+#modern .m-status {
+  font: 600 10px ui-monospace, Menlo, Consolas, monospace; letter-spacing: .12em;
+  color: #101010; background: var(--acc); padding: 3px 8px; border-radius: 3px;
+}
+#modern .m-name {
+  font-weight: 800; font-size: clamp(40px, 6vw, 62px);
+  letter-spacing: -.035em; line-height: 1.02; color: #f5efe2; margin: 2px 0 10px;
+}
+#modern .m-name .acc { color: var(--acc); }
+#modern .m-sub { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+#modern .spark { display: block; }
+#modern .spark line { stroke: #34302a; stroke-width: 1; }
+#modern .spark polyline { fill: none; stroke: var(--acc); stroke-width: 2; }
+#modern .spark .fill { fill: rgba(216,255,61,.08); stroke: none; }
+
+/* skills bar-chart */
+
+#modern .skl-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 10px;
+}
+#modern svg.chart { display: block; width: 100%; height: auto; }
+#modern .chart text { font-family: ui-monospace, Menlo, Consolas, monospace; }
+#modern .chart .grid { stroke: #2e2a24; stroke-width: 1; }
+#modern .chart .tick { fill: #6b6357; font-size: 9.5px; }
+#modern .chart .slabel { fill: #cfc7b8; font-size: 10.5px; letter-spacing: .06em; }
+#modern .chart .val { fill: #8f8677; font-size: 9.5px; }
+#modern .chart rect.bar { fill: var(--acc); }
+
+/* experience timeline */
+
+#modern .trow {
+  display: grid; grid-template-columns: 190px 1fr; gap: 3px 14px;
+  align-items: baseline; padding: 10px 0;
+  border-bottom: 1px solid var(--hair);
+}
+#modern .trow:last-child { border-bottom: none; }
+#modern .ep {
+  font: 11px ui-monospace, Menlo, Consolas, monospace; color: #6b6357; white-space: nowrap;
+}
+#modern .trow b { font-size: 14.5px; font-weight: 700; color: #f0eadd; letter-spacing: -.01em; }
+#modern .trow .meta {
+  grid-column: 2;
+  font: 11px ui-monospace, Menlo, Consolas, monospace; color: var(--dim); text-align: left;
+}
+#modern .trow .acc-t { color: var(--acc); }
+
+/* education numerals */
+
+#modern .edu-row { display: flex; gap: 14px; }
+#modern .edu-block { flex: 1; border: 1px solid var(--hair); border-radius: 6px; padding: 14px 16px 12px; background: #24211c; }
+#modern .num {
+  font-weight: 800; font-size: 54px; line-height: 1; letter-spacing: -.03em;
+  color: var(--acc); margin: 6px 0 4px;
+  font-variant-numeric: tabular-nums;
+}
+#modern .edu-sub { font-size: 12.5px; color: #b9b1a2; line-height: 1.5; }
+
+/* builds log */
+
+#modern .brow {
+  display: flex; align-items: baseline; gap: 12px; padding: 8px 0;
+  border-bottom: 1px solid var(--hair); font-size: 14.5px;
+}
+#modern .brow:last-child { border-bottom: none; }
+#modern .chip {
+  font: 600 9.5px ui-monospace, Menlo, Consolas, monospace; letter-spacing: .1em;
+  border: 1px solid var(--acc); color: var(--acc);
+  padding: 2px 7px; border-radius: 3px; white-space: nowrap;
+}
+#modern .chip.mut { border-color: #4a453c; color: #8f8677; }
+#modern .brow b { color: #f0eadd; font-weight: 700; }
+#modern .brow span.d { color: #8f8677; font-size: 12.5px; }
+
+/* modern log */
+
+#modern .logline {
+  font: 12px/2 ui-monospace, Menlo, Consolas, monospace; color: #b9b1a2;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+#modern .side .logline { white-space: normal; line-height: 1.7; }
+#modern .logline .ts { color: #6b6357; }
+#modern .logline .hl { color: var(--acc); }
+
+/* modern footer */
+
+#modern .ring-big {
+  font-weight: 800; font-size: 22px; letter-spacing: -.02em; color: #f0eadd;
+}
+#modern .ring-mesh {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 14px;
+  border-top: 1px solid var(--hair); margin-top: 10px; padding-top: 12px; flex-wrap: wrap;
+}
+
+/* ============================================================
+   chrome: page shell shared bits
+   ============================================================ */
+
+.vis-hidden { position: absolute; left: -9999px; }
+
+@media (max-width: 700px) {
+  .cols { grid-template-columns: 1fr; }
+  #modern .edu-row { flex-direction: column; }
+  #modern .trow { grid-template-columns: 1fr; }
+  #modern .trow .meta { text-align: left; }
+  #ring { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- early error collector (before any layout) -->
+<div class="stack">
+
+  <!-- ================= LAYER 1 : RETRO SURFACE ================= -->
+  <div id="surface">
+    <div class="page">
+
+      <section class="sec" data-sec="hero" data-hud-label="index" data-hud="mikhail.bin_yassin &middot; v2026.9 &middot; status: open-to-work">
+        <h1 class="blink">~*~ Welcome to Mikhail's Home Page!!! ~*~</h1>
+        <p class="hello">…you have reached the personal home page of <b>Mikhail Bin Yassin</b>, data engineer-in-training, Kota Belud, Sabah &rarr; Johor Bahru. Please sign the guestbook!</p>
+        <marquee scrollamount="4" class="mono">★ hello &amp; selamat datang ★ i move ~2,000,000,000 rows a day and i have the receipts ★ currently: final year @ UTM + 9 months of U Mobile big-data under my belt ★ psst — the lens follows your cursor, look under the surface ★ best experienced on a CRT ★</marquee>
+        <p class="mq-static mono tiny">★ hello &amp; selamat datang ★ i move ~2,000,000,000 rows a day ★ the lens follows your cursor — look under the surface ★</p>
+        <hr>
+        <p class="ctr tiny mono">WebMaster: Mikhail Bin Yassin &middot; last updated: 24 Sep 2026 &middot; <a href="mailto:mikhailyassin@proton.me">e-mail me!</a></p>
+      </section>
+
+      <div class="cols">
+        <div class="side">
+
+          <section class="sec" data-sec="links" data-hud-label="links.out" data-hud="8 endpoints &middot; github mikhaiIy &middot; linkedin mikhailyassin">
+            <div class="panel">
+              <h2>My Fav Sites</h2>
+              <hr>
+              <ul>
+                <li><a href="https://github.com/mikhaiIy" rel="noopener">My GitHub</a> &mdash; mikhaiIy</li>
+                <li><a href="https://www.linkedin.com/in/mikhailyassin" rel="noopener" target="_blank">My LinkedIn</a></li>
+                <li><a href="https://spark.apache.org" rel="noopener" target="_blank">Apache Spark docs</a> (bedtime reading)</li>
+                <li><a href="https://clickhouse.com" rel="noopener" target="_blank">ClickHouse</a> &mdash; goes brrr</li>
+                <li><a href="https://opentelemetry.io" rel="noopener" target="_blank">OpenTelemetry</a></li>
+                <li><a href="https://developer.mozilla.org" rel="noopener" target="_blank">MDN</a> &mdash; saved me in WBL 1</li>
+              </ul>
+              <hr>
+              <p class="tiny">&raquo; <a href="#" data-ring="prev">prev</a> | <a href="#" data-ring="hub">ring hub</a> | <a href="#" data-ring="next">next</a> &laquo;</p>
+              <p class="tiny mono">irc: #data-eng @ DALnet &middot; nick: kbelud_kid</p>
+            </div>
+          </section>
+
+          <section class="sec" data-sec="sys" data-hud-label="sys.telemetry" data-hud="visits counted live &middot; uptime 99.97% &middot; 800&times;600 certified">
+            <div class="panel">
+              <h3>Visitor Counter</h3>
+              <div class="led" data-visits>0133742</div>
+              <p class="tiny ctr">counter works! it counts YOU.</p>
+              <div class="widget">
+                <span class="badge-800">BEST VIEWED AT 800&times;600</span>
+              </div>
+              <div class="pager">PAGER: pipeline OK &middot; 99.97% uptime</div>
+              <div class="uc" role="img" aria-label="under construction">
+                <div class="uc-lamp"></div>
+                <div class="uc-board"><span>UNDER CONSTRUCTION</span></div>
+              </div>
+              <p class="tiny ctr">(always. a data pipeline is never done.)</p>
+            </div>
+          </section>
+
+        </div>
+        <div class="maincol">
+
+          <section class="sec" data-sec="skills" data-hud-label="skills.profile" data-hud="6 instruments &middot; ClickHouse p95 23ms">
+            <div class="panel">
+              <h2>~ My SkilLz ~</h2>
+              <hr>
+              <table class="skl">
+                <tr><td>SQL</td><td class="bar">█████████████████░░░</td><td>95%</td></tr>
+                <tr><td>Python</td><td class="bar">█████████████████░░░</td><td>92%</td></tr>
+                <tr><td>PySpark</td><td class="bar">█████████████████░░░</td><td>90%</td></tr>
+                <tr><td>Git</td><td class="bar">█████████████████░░░</td><td>90%</td></tr>
+                <tr><td>Bash/Linux</td><td class="bar">████████████████░░░░</td><td>88%</td></tr>
+                <tr><td>PostgreSQL</td><td class="bar">████████████████░░░░</td><td>85%</td></tr>
+                <tr><td>ClickHouse</td><td class="bar">████████████████░░░░</td><td>80%</td></tr>
+                <tr><td>OpenTelemetry</td><td class="bar">██████████████░░░░░░</td><td>75%</td></tr>
+              </table>
+              <p class="tiny">also: ETL design &middot; big data &middot; orchestration &middot; web app dev &middot; asking the database politely first</p>
+            </div>
+          </section>
+
+          <section class="sec" data-sec="exp" data-hud-label="exp.timeline" data-hud="U Mobile DE intern &middot; ~2e9 CDR rows/day">
+            <div class="panel">
+              <h2>~ My Journee ~</h2>
+              <hr>
+              <table class="jour">
+                <tr><th colspan="2">Where I've Been (experience)</th></tr>
+                <tr><td>Nov 2025 &ndash;<br>Aug 2026</td>
+                    <td><b>Data Engineering Intern &mdash; U Mobile</b>, Data Science &amp; Campaign Value Management (9 months). Built &amp; shipped PySpark/Python ETL for billing, activation and reconciliation reporting &mdash; requirements &rarr; UAT &rarr; production, on an on-premise big-data platform. Peaked at ~2 billion CDR rows/day for a cloud DaaS POC. Root-caused inter-operator billing discrepancies; automated secure file transfers &amp; variance alert e-mails.</td></tr>
+                <tr><td>2023 &amp; 2025</td>
+                    <td><b>Team lead things:</b> FCRI 2025 showcase (liaison with Finexus Group), SUSKOM'23 and Earth Day 2023 (multimedia lead). Led 4-person teams in two Work-Based Learning semesters &mdash; both won <b>Best Group</b>.</td></tr>
+                <tr><td>always</td>
+                    <td><b>Certifications:</b> AWS Academy Data Engineering &middot; AWS Academy Cloud Architecting &middot; Google AI Professional (Cloud Foundations) &middot; Microsoft Azure Data Fundamentals.</td></tr>
+              </table>
+            </div>
+          </section>
+
+          <section class="sec" data-sec="edu" data-hud-label="edu.snapshot" data-hud="3.85 CGPA &middot; UTM Johor Bahru &middot; 4.00 foundation">
+            <div class="panel">
+              <h2>~ Skool Record ~</h2>
+              <hr>
+              <ul>
+                <li><b>BSc Computer Science (Data Engineering)</b> &mdash; Universiti Teknologi Malaysia, Johor Bahru &middot; Oct 2021 &ndash; Oct 2026 &middot; CGPA <b>3.85</b></li>
+                <li><b>Foundation in Engineering</b> &mdash; UiTM Dengkil &middot; 2020&ndash;2021 &middot; CGPA <b>4.00</b> (not a typo!!)</li>
+                <li>Hometown: <b>Kota Belud, Sabah</b> &mdash; below the mighty Mount Kinabalu ⛰</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="sec" data-sec="builds" data-hud-label="builds.log" data-hud="DAG scheduler &middot; ClickStack POC &middot; best-group &times;2">
+            <div class="panel">
+              <h2>~ Thingz I Built ~</h2>
+              <hr>
+              <ul>
+                <li><b>DAG-based ETL Scheduling System</b> (final-year project) &mdash; custom pipeline orchestration, retries, the works <span class="badge-new">NEW!</span></li>
+                <li><b>ClickStack monitoring dashboard POC</b> &mdash; one pane of glass for a whole on-prem platform</li>
+                <li><b>Cloud DaaS POC</b> &mdash; ~2,000,000,000 CDR rows/day through PySpark, still standing</li>
+                <li><b>Secure cloud file transfer automation</b> + variance alert e-mails + file permission management</li>
+                <li><b>Kindergarten web app</b> &amp; <b>autism education center web app</b> &mdash; led both teams to Best Group 🏆</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="sec" data-sec="log" data-hud-label="~/log" data-hud="last entry 2026-08-30 &middot; pyspark skew salting">
+            <div class="panel">
+              <h2>~ dAiRy &lt;3 ~</h2>
+              <hr>
+              <ul>
+                <li><b>30 Aug 2026</b> &mdash; today i learned PySpark salting fixes skew. shuffle spill went down 71%. i did a little dance.</li>
+                <li><b>24 Aug 2026</b> &mdash; internship handoff doc: signed. my variance alerts now page real on-call engineers. terrifying. proud.</li>
+                <li><b>17 Aug 2026</b> &mdash; FYP: the DAG scheduler now survives <span class="mono">kill -9</span>. it is stronger than me.</li>
+                <li><b>9 Aug 2026</b> &mdash; ClickStack dashboard demo day. 2e9 rows/day and nobody's pager went off. counting that as a win.</li>
+                <li><b>02 Aug 2026</b> &mdash; explained settlement discrepancies to a finance person without using the word &ldquo;tuple&rdquo;. growth!</li>
+              </ul>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+      <section class="sec" data-sec="ring" data-hud-label="ring.mesh" data-hud="webring &middot; 5 nodes &middot; handshake 56k &rarr; 400Gbps">
+        <hr>
+        <div class="ringline">&laquo; <a href="#" data-ring="prev">prev</a> | <a href="#" data-ring="hub">the data-engineering webring</a> | <a href="#" data-ring="next">next</a> &raquo;</div>
+        <p class="ctr tiny">&copy; 2026 Mikhail Bin Yassin &middot; hand-coded in Notepad &middot; no cookies, only CDRs &middot;
+        you are visitor #<span data-visits>0133742</span> &middot; <a href="mailto:mikhailyassin@proton.me">sign my guestbook (via e-mail, it's 1999)</a></p>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- ================= LAYER 2 : MODERN ================= -->
+  <div id="modern" aria-hidden="true">
+    <div class="page">
+
+      <section class="sec" data-sec="hero">
+        <div class="m-top">
+          <span class="lab">index.mikhail</span>
+          <span class="lab">kota belud, sabah &rarr; johor bahru</span>
+          <span class="m-status">OPEN TO WORK &middot; GRAD 2026</span>
+        </div>
+        <h1 class="m-name">MIKHAIL<span class="acc">.</span>BIN<span class="acc">.</span>YASSIN</h1>
+        <div class="m-sub">
+          <span class="lab" style="color:#f0eadd">DATA ENGINEER</span>
+          <span class="lab">SPARK / CLICKHOUSE / PYTHON</span>
+          <svg class="spark" width="200" height="46" viewBox="0 0 200 46" aria-hidden="true">
+            <line x1="0" y1="44" x2="200" y2="44"></line>
+            <polygon class="fill" points="0,38 30,35 60,36 90,29 120,31 150,22 175,15 200,6 200,44 0,44"></polygon>
+            <polyline points="0,38 30,35 60,36 90,29 120,31 150,22 175,15 200,6"></polyline>
+          </svg>
+          <span class="lab" style="color:var(--acc)">rows.processed/day &nwarr;</span>
+        </div>
+      </section>
+
+      <div class="cols">
+        <div class="side">
+
+          <section class="sec" data-sec="links">
+            <div class="panel">
+              <div class="lab">links.out</div>
+              <div style="height:10px"></div>
+              <div class="logline"><span class="ts">git &nbsp;&mdash;&mdash;</span> <span class="hl">github.com/mikhaiIy</span></div>
+              <div class="logline"><span class="ts">li &nbsp;&mdash;&mdash;</span> linkedin.com/in/mikhailyassin</div>
+              <div class="logline"><span class="ts">mx &nbsp;&mdash;&mdash;</span> mikhailyassin@proton.me</div>
+              <div class="logline"><span class="ts">tel &nbsp;&mdash;&mdash;</span> (+60) 12-8871846</div>
+              <div style="height:12px"></div>
+              <div class="lab">ring.mesh</div>
+              <div style="height:8px"></div>
+              <div class="logline">node 5 of 5 &middot; prev / hub / next</div>
+            </div>
+          </section>
+
+          <section class="sec" data-sec="sys">
+            <div class="panel">
+              <div class="lab">sys.telemetry</div>
+              <div style="height:10px"></div>
+              <div class="logline"><span class="ts">visits</span> <span class="hl" data-visits>0133742</span> &middot; unique-ish</div>
+              <div class="logline"><span class="ts">uptime</span> 99.97% &middot; pager: quiet</div>
+              <div class="logline"><span class="ts">viewport</span> any. even 800&times;600.</div>
+              <div class="logline"><span class="ts">status</span> <span class="hl">under construction, forever</span></div>
+            </div>
+          </section>
+
+        </div>
+        <div class="maincol">
+
+          <section class="sec" data-sec="skills">
+            <div class="panel">
+              <div class="skl-head">
+                <span class="lab">skills.profile</span>
+                <span class="lab" style="color:var(--acc)">6 instruments &middot; ClickHouse p95 23ms</span>
+              </div>
+              <svg class="chart" viewBox="0 0 620 236" aria-hidden="true">
+                <g class="grid">
+                  <line x1="243" y1="18" x2="243" y2="228"></line>
+                  <line x1="362" y1="18" x2="362" y2="228"></line>
+                  <line x1="481" y1="18" x2="481" y2="228"></line>
+                  <line x1="600" y1="18" x2="600" y2="228"></line>
+                  <line x1="124" y1="18" x2="600" y2="18"></line>
+                </g>
+                <text x="243" y="12" text-anchor="middle" fill="#6b6357" font-size="9.5">25</text>
+                <text x="362" y="12" text-anchor="middle" fill="#6b6357" font-size="9.5">50</text>
+                <text x="481" y="12" text-anchor="middle" fill="#6b6357" font-size="9.5">75</text>
+                <text x="600" y="12" text-anchor="end" fill="#6b6357" font-size="9.5">100</text>
+                <g id="bars"></g>
+              </svg>
+              <div class="lab" style="margin-top:6px">&Sigma; also: ETL design &middot; orchestration &middot; big data &middot; web app dev</div>
+            </div>
+          </section>
+
+          <section class="sec" data-sec="exp">
+            <div class="panel">
+              <div style="display:flex;justify-content:space-between;align-items:baseline">
+                <span class="lab">exp.timeline &middot; unix epoch</span>
+                <span class="lab" style="color:var(--acc)">~2e9 CDR rows/day @ peak</span>
+              </div>
+              <div style="height:8px"></div>
+              <div class="trow">
+                <span class="ep">1761955200 &rarr; 1788134400</span>
+                <b>U MOBILE &mdash; DATA ENGINEERING INTERN</b>
+                <span class="meta">on-prem billing / activation / reconciliation ETL &middot; cloud DaaS POC</span>
+              </div>
+              <div class="trow">
+                <span class="ep">1767225600 &rarr; now</span>
+                <b>UTM JOHOR BAHRU &mdash; BSC CS (DATA ENG)</b>
+                <span class="meta">CGPA 3.85 &middot; FYP: DAG scheduler</span>
+              </div>
+              <div class="trow">
+                <span class="ep">1743465600</span>
+                <b>FCRI 2025 &mdash; TEAM LEAD</b>
+                <span class="meta">showcase &middot; liaison Finexus Group</span>
+              </div>
+              <div class="trow">
+                <span class="ep">1696118400</span>
+                <b>SUSKOM'23 / EARTH DAY &mdash; MULTIMEDIA LEAD</b>
+                <span class="meta">4-person teams &middot; Best Group &times;2</span>
+              </div>
+              <div class="trow">
+                <span class="ep">certs</span>
+                <b>AWS DE &middot; AWS ARCH &middot; GCP AI &middot; AZURE DF</b>
+                <span class="meta">4/4 verified</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="sec" data-sec="edu">
+            <div class="panel">
+              <div class="lab">edu.snapshot</div>
+              <div class="edu-row" style="margin-top:10px">
+                <div class="edu-block">
+                  <span class="lab">BSc CS &middot; Data Eng</span>
+                  <div class="num">3.85</div>
+                  <span class="lab">UTM &middot; 2021&rarr;2026 &middot; JOHOR BAHRU</span>
+                </div>
+                <div class="edu-block">
+                  <span class="lab">Foundation &middot; Eng</span>
+                  <div class="num">4.00</div>
+                  <span class="lab">UiTM DENHKIL &middot; 2020&rarr;21</span>
+                </div>
+                <div class="edu-block">
+                  <span class="lab">Origin</span>
+                  <div class="num" style="font-size:34px;padding-top:10px">5.9&deg;N</div>
+                  <span class="lab">KOTA BELUD &middot; BELOW MT KINABALU</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="sec" data-sec="builds">
+            <div class="panel">
+              <div class="lab">builds.log &mdash; shipped things</div>
+              <div style="height:8px"></div>
+              <div class="brow"><span class="chip">FYP</span><b>DAG-based ETL scheduling system</b><span class="d">custom orchestration &middot; retries &middot; survives kill -9</span></div>
+              <div class="brow"><span class="chip">POC</span><b>ClickStack platform monitoring dashboard</b><span class="d">one pane of glass, on-prem</span></div>
+              <div class="brow"><span class="chip">2e9/DAY</span><b>Cloud DaaS pipeline &mdash; PySpark</b><span class="d">CDR rows &middot; billing &middot; reconciliation</span></div>
+              <div class="brow"><span class="chip mut">AUTOMATION</span><b>Secure cloud file transfers</b><span class="d">+ variance alert e-mails + permission mgmt</span></div>
+              <div class="brow"><span class="chip mut">BEST GROUP &times;2</span><b>Kindergarten &amp; autism-center web apps</b><span class="d">led 4-person WBL teams</span></div>
+            </div>
+          </section>
+
+          <section class="sec" data-sec="log">
+            <div class="panel">
+              <div class="lab">~/log &mdash; today i learned</div>
+              <div style="height:8px"></div>
+              <div class="logline"><span class="ts">2026-08-30 14:02</span> &nbsp;PySpark: salting fixed the skew &mdash; shuffle spill <span class="hl">&darr;71%</span></div>
+              <div class="logline"><span class="ts">2026-08-24 09:41</span> &nbsp;handoff signed; variance alerts now page real on-call engineers</div>
+              <div class="logline"><span class="ts">2026-08-17 20:15</span> &nbsp;FYP: DAG retry w/ backoff &mdash; scheduler survives <span class="hl">kill -9</span></div>
+              <div class="logline"><span class="ts">2026-08-09 11:03</span> &nbsp;ClickStack POC demo &mdash; 2e9 CDR rows/day, zero pages</div>
+              <div class="logline"><span class="ts">2026-08-02 16:20</span> &nbsp;explained settlement discrepancies without saying &ldquo;tuple&rdquo;</div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+      <section class="sec" data-sec="ring">
+        <div class="ring-mesh">
+          <span class="ring-big">the DE webring<span style="color:var(--acc)">.</span></span>
+          <span class="lab">node 5 / 5 &middot; prev &middot; hub &middot; next &middot; est. 1999, rebooted 2026</span>
+          <span class="lab">&copy; mikhail bin yassin &middot; no cookies, only CDRs</span>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+</div><!-- /.stack -->
+
+<div id="ring" aria-hidden="true"></div>
+<div id="chip" aria-hidden="true"><i id="chipL"></i><b id="chipD"></b></div>
+<div id="pill">move your cursor &mdash; look under the surface</div>
+<button id="toggle" aria-pressed="false" type="button">[ hold tab: full modern view ]</button>
+<div id="dialup" aria-hidden="true">ready.</div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (s) { return document.querySelector(s); };
+  var modern = $("#modern"), stack = $(".stack"), chip = $("#chip"),
+      chipL = $("#chipL"), chipD = $("#chipD"), pill = $("#pill"),
+      ring = $("#ring"), toggle = $("#toggle");
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var IDLE_MS = 4000, EASE = 0.16;
+
+  /* ---------- visitor counter: deterministic, per-browser ---------- */
+  var base = 133741, seen = 0;
+  try {
+    seen = parseInt(localStorage.getItem("bl-visits") || "0", 10) || 0;
+    localStorage.setItem("bl-visits", String(seen + 1));
+  } catch (e) { /* file:// in private mode: fine, stay at base */ }
+  var visits = base + seen + 1;
+  var pad = function (n) {
+    var s = String(n); while (s.length < 7) s = "0" + s; return s;
+  };
+  var spots = document.querySelectorAll("[data-visits]");
+  for (var i = 0; i < spots.length; i++) spots[i].textContent = pad(visits);
+
+  /* ---------- lens state ---------- */
+  var tx = 0, ty = 0, cx = 0, cy = 0;
+  var lastMove = -1e9;
+
+  function setTarget(x, y) {
+    tx = x; ty = y; lastMove = performance.now();
+  }
+  window.addEventListener("mousemove", function (e) { setTarget(e.pageX, e.pageY); });
+  window.addEventListener("touchstart", function (e) {
+    if (e.touches[0]) setTarget(e.touches[0].pageX, e.touches[0].pageY);
+  }, { passive: true });
+  window.addEventListener("touchmove", function (e) {
+    if (e.touches[0]) setTarget(e.touches[0].pageX, e.touches[0].pageY);
+  }, { passive: true });
+
+  function stackX() { return stack.offsetLeft; }
+  function stackY() { return stack.offsetTop; }
+
+  /* ---------- main loop: ease lens, drive mask, chip, pill ---------- */
+  function frame(now) {
+    var idle = now - lastMove > IDLE_MS;
+    document.body.classList.toggle("idle", idle);
+    if (idle) {
+      tx = window.scrollX + window.innerWidth / 2;
+      ty = window.scrollY + window.innerHeight * 0.44;
+    }
+    var k = reduced ? 1 : EASE;
+    cx += (tx - cx) * k;
+    cy += (ty - cy) * k;
+
+    modern.style.setProperty("--mx", (cx - stackX()).toFixed(1) + "px");
+    modern.style.setProperty("--my", (cy - stackY()).toFixed(1) + "px");
+
+    var vx = cx - window.scrollX, vy = cy - window.scrollY;
+
+    /* lens ring */
+    ring.style.transform =
+      "translate(" + vx.toFixed(1) + "px," + vy.toFixed(1) + "px) translate(-50%,-50%)";
+
+    /* HUD chip: what section is under the cursor? */
+    var sec = null;
+    if (!idle) {
+      var el = document.elementFromPoint(vx, vy);
+      if (el && el.closest) sec = el.closest("[data-sec]");
+    }
+    if (sec && sec.getAttribute("data-sec") !== hud_key) updateChip(sec);
+    chip.classList.toggle("on", !!(sec) && !idle);
+
+    /* chip placement with edge flip */
+    var w = chip.offsetWidth, h = chip.offsetHeight;
+    var px = vx + 18, py = vy + 22;
+    if (px + w > window.innerWidth - 10) px = vx - w - 18;
+    if (py + h > window.innerHeight - 10) py = vy - h - 16;
+    chip.style.transform = "translate(" + px.toFixed(1) + "px," + py.toFixed(1) + "px)";
+
+    requestAnimationFrame(frame);
+  }
+  var hud_key = "";
+  function updateChip(sec) {
+    hud_key = sec.getAttribute("data-sec");
+    chipL.textContent = sec.getAttribute("data-hud-label") || "";
+    chipD.textContent = sec.getAttribute("data-hud") || "";
+  }
+
+  /* ---------- Tab hold + corner toggle: full modern view ---------- */
+  function sticky() { return toggle.getAttribute("aria-pressed") === "true"; }
+  window.addEventListener("keydown", function (e) {
+    if (e.key !== "Tab") return;
+    e.preventDefault();
+    if (!e.repeat) document.body.classList.add("full");
+  });
+  window.addEventListener("keyup", function (e) {
+    if (e.key !== "Tab") return;
+    if (!sticky()) document.body.classList.remove("full");
+  });
+  toggle.addEventListener("click", function () {
+    var on = !sticky();
+    toggle.setAttribute("aria-pressed", on ? "true" : "false");
+    document.body.classList.toggle("full", on);
+  });
+
+  /* ---------- webring dial-up messages ---------- */
+  var MSG = {
+    prev: "dialing ring node 4 of 5 ... 56k handshake ... connected",
+    hub:  "ring hub: 5 nodes online. this site is node 5.",
+    next: "dialing ring node 1 of 5 ... 56k handshake ... connected"
+  };
+  var typeTimer = null;
+  var dialup = $("#dialup");
+  function typeMsg(msg) {
+    if (reduced) { dialup.textContent = msg; return; }
+    if (typeTimer) clearInterval(typeTimer);
+    var n = 0;
+    dialup.textContent = "";
+    typeTimer = setInterval(function () {
+      dialup.textContent = msg.slice(0, ++n);
+      if (n >= msg.length) clearInterval(typeTimer);
+    }, 16);
+  }
+  var ringLinks = document.querySelectorAll("[data-ring]");
+  for (i = 0; i < ringLinks.length; i++) {
+    (function (a) {
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        typeMsg(MSG[a.getAttribute("data-ring")] || "at tone, leave message");
+      });
+    })(ringLinks[i]);
+  }
+
+  /* ---------- height sync: paired sections match by construction ---------- */
+  function fit() {
+    var pairs = {};
+    var a = document.querySelectorAll("#surface [data-sec]");
+    var b, j;
+    for (j = 0; j < a.length; j++) pairs[a[j].getAttribute("data-sec")] = [a[j], null];
+    a = document.querySelectorAll("#modern [data-sec]");
+    for (j = 0; j < a.length; j++) {
+      var key = a[j].getAttribute("data-sec");
+      if (pairs[key]) pairs[key][1] = a[j];
+    }
+    for (var k2 in pairs) {
+      var pair = pairs[k2];
+      if (!pair[1]) continue;
+      pair[0].style.height = "";
+      pair[1].style.height = "";
+      var h = Math.max(pair[0].offsetHeight, pair[1].offsetHeight);
+      pair[0].style.height = h + "px";
+      pair[1].style.height = h + "px";
+    }
+  }
+  var fitT = null;
+  window.addEventListener("resize", function () {
+    clearTimeout(fitT); fitT = setTimeout(fit, 120);
+  });
+
+  /* ---------- modern skills bar chart (SVG, mono axis) ---------- */
+  var SKILLS = [
+    ["SQL", 95], ["PYTHON", 92], ["PYSPARK", 90], ["GIT", 90],
+    ["BASH/LINUX", 88], ["POSTGRESQL", 85], ["CLICKHOUSE", 80], ["OPENTELEM.", 75]
+  ];
+  (function drawBars() {
+    var NS = "http://www.w3.org/2000/svg";
+    var g = document.getElementById("bars");
+    if (!g) return;
+    var X0 = 124, SCALE = 4.76;
+    SKILLS.forEach(function (s, idx) {
+      var y = 34 + idx * 25, w = s[1] * SCALE;
+      var lab = document.createElementNS(NS, "text");
+      lab.setAttribute("x", 116); lab.setAttribute("y", y + 10);
+      lab.setAttribute("text-anchor", "end");
+      lab.setAttribute("class", "slabel");
+      lab.textContent = s[0];
+      g.appendChild(lab);
+      var r = document.createElementNS(NS, "rect");
+      r.setAttribute("x", X0); r.setAttribute("y", y);
+      r.setAttribute("width", w.toFixed(1)); r.setAttribute("height", 12);
+      r.setAttribute("class", "bar");
+      g.appendChild(r);
+      var val = document.createElementNS(NS, "text");
+      val.setAttribute("x", X0 + w + 6); val.setAttribute("y", y + 10);
+      val.setAttribute("class", "val");
+      val.textContent = s[1];
+      g.appendChild(val);
+    });
+  })();
+
+  /* ---------- boot ---------- */
+  cx = tx = window.scrollX + window.innerWidth / 2;
+  cy = ty = window.scrollY + window.innerHeight * 0.44;
+  fit();
+  requestAnimationFrame(fit);
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

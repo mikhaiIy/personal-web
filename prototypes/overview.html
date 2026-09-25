@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>vibe check — which mikhail are we building?</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23101418'/%3E%3Crect x='3' y='3' width='10' height='10' fill='%2300ff9c'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --ink:#11151b;
+    --paper:#f2f0ea;
+    --mono:ui-monospace,"Cascadia Mono","JetBrains Mono","Courier New",monospace;
+    --sys:"MS Sans Serif",Tahoma,Geneva,Verdana,sans-serif;
+    --retro:"Times New Roman",Times,serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--ink);color:var(--paper);
+    font-family:var(--mono);
+    min-height:100vh;
+    padding:56px 48px 72px;
+  }
+  header{max-width:1240px;margin:0 auto 44px}
+  .kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#8a93a1}
+  .kicker b{color:#d8ff3d;font-weight:400}
+  h1{
+    font-family:var(--sys);font-weight:800;
+    font-size:clamp(34px,4.6vw,58px);line-height:1.02;
+    margin-top:14px;letter-spacing:-.02em;
+  }
+  h1 .fade{color:#8a93a1}
+  .sub{margin-top:14px;font-size:13px;color:#aeb7c4;max-width:70ch;line-height:1.7}
+  .sub em{color:var(--paper);font-style:normal;border-bottom:1px solid #3a4350}
+
+  .grid{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  @media(max-width:1080px){.grid{grid-template-columns:1fr;max-width:560px;margin-left:auto;margin-right:auto}}
+
+  .tile{
+    position:relative;border:1px solid #232a33;background:#0c1015;
+    border-radius:10px;overflow:hidden;display:flex;flex-direction:column;
+    min-height:520px;
+  }
+  .tile .stage{position:relative;flex:1;min-height:300px;overflow:hidden}
+  .tile .meta{padding:18px 20px 20px;border-top:1px solid #232a33}
+  .num{position:absolute;top:30px;left:16px;font-size:11px;color:#5b6572;letter-spacing:.15em;z-index:5}
+  .tile h2{font-family:var(--sys);font-weight:800;font-size:20px;letter-spacing:-.01em;margin-bottom:6px}
+  .tile .pitch{font-size:12px;line-height:1.65;color:#aeb7c4}
+  .tile .pitch em{color:var(--paper);font-style:normal}
+  .pal{display:flex;gap:5px;margin-top:14px}
+  .pal i{width:22px;height:10px;border-radius:2px;display:block}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+  .tags span{font-size:10px;letter-spacing:.08em;color:#8a93a1;border:1px solid #2a323d;padding:3px 8px;border-radius:99px;text-transform:lowercase}
+  .open{margin-top:16px;font-size:11px;color:#d8ff3d;text-decoration:none;display:inline-block}
+  .open:hover{text-decoration:underline}
+
+  /* ---------- TILE A : workstation ---------- */
+  .stageA{background:
+    radial-gradient(120% 90% at 80% 110%,#13202a 0%,transparent 60%),
+    repeating-linear-gradient(90deg,#0c1015 0 46px,#0d1116 46px 48px);
+    padding:0}
+  .tickerA{
+    position:absolute;top:0;left:0;right:0;height:22px;display:flex;align-items:center;
+    background:#0a2a20;border-bottom:1px solid #1d4a3a;overflow:hidden;font-size:10px;letter-spacing:.06em
+  }
+  .eq{display:flex;gap:2px;align-items:flex-end;height:26px;margin-top:6px}
+  .eq i{width:4px;background:linear-gradient(180deg,#00ff9c,#00b478);height:var(--h,16px);transform-origin:bottom;animation:eq 1.1s ease-in-out infinite alternate;border-radius:1px}
+  @keyframes eq{from{transform:scaleY(.25)}to{transform:scaleY(1)}}
+  .mbar .fill{display:block}
+  .tickerA .run{white-space:nowrap;color:#7ef0c0;animation:tick 18s linear infinite}
+  @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .deskA{position:absolute;inset:22px 0 0;padding:18px}
+  .titleA{
+    font-family:var(--sys);font-weight:800;font-size:26px;letter-spacing:-.01em;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:1.5px 0 rgba(0,229,255,.55),-1.5px 0 rgba(255,45,149,.35);
+    margin:10px 0 2px;
+  }
+  .winA{
+    position:absolute;right:16px;top:52px;width:55%;background:#d4d0c8;border-radius:2px;
+    border:1px solid #86827c;
+    box-shadow:inset 1px 1px 0 #fff,inset -1px -1px 0 #86827c,4px 6px 0 rgba(0,0,0,.45);
+    transition:transform .18s ease;transform:rotate(.6deg);
+  }
+  .tile:hover .winA{transform:rotate(-1.2deg) translateY(-3px)}
+  .winA .bar{display:flex;align-items:center;gap:6px;background:linear-gradient(180deg,#1a3d55,#173047);color:#fff;font-size:10px;padding:4px 8px;font-family:var(--sys)}
+  .winA .bar .b{margin-left:auto;display:flex;gap:3px}
+  .winA .bar .b i{width:11px;height:10px;background:#d4d0c8;border:1px solid #555;box-shadow:inset 1px 1px 0 #fff;border-radius:1px}
+  .winA .body{padding:12px 12px 14px;font-family:var(--sys)}
+  .mbar{display:grid;grid-template-columns:64px 1fr 30px;align-items:center;gap:8px;margin:5px 0;font-size:10px;color:#222}
+  .mbar .track{height:14px;background:#fff;border:1px solid #86827c;box-shadow:inset 1px 1px 0 #b9b4ae;padding:2px}
+  .mbar .fill{height:100%;background:repeating-linear-gradient(90deg,#00b478 0 6px,#00d68f 6px 10px)}
+  .winA2{
+    position:absolute;left:14px;bottom:16px;width:52%;background:#0b0f0c;border-radius:2px;
+    border:1px solid #2b6b58;box-shadow:inset 1px 1px 0 #14503f,4px 5px 0 rgba(0,0,0,.5);
+    transform:rotate(-1deg);color:#00ff9c;font-size:10px;
+  }
+  .winA2 .bar{display:flex;gap:6px;align-items:center;background:#123f33;border-bottom:1px solid #2b6b58;color:#cffce8;padding:3px 8px;font-size:9px}
+  .winA2 .body{padding:9px 10px;line-height:1.7}
+  .taskA{
+    position:absolute;left:0;right:0;bottom:0;height:24px;background:#d4d0c8;
+    border-top:1px solid #fff;display:flex;align-items:center;gap:8px;padding:0 8px;
+    box-shadow:inset 0 1px 0 #fff;font-family:var(--sys);font-size:10px;color:#111
+  }
+  .taskA .start{padding:2px 8px;border:1px solid #555;box-shadow:inset 1px 1px 0 #fff;border-radius:1px;display:flex;gap:4px;align-items:center}
+  .taskA .start i{width:10px;height:10px;background:conic-gradient(#e33 0 25%,#3a3 25% 50%,#36b 50% 75%,#fc0 75%);border-radius:2px}
+  .taskA .tb{padding:2px 8px;border:1px solid #999;box-shadow:inset -1px -1px 0 #fff,inset 1px 1px 0 #999;border-radius:1px}
+  .taskA .tray{margin-left:auto;display:flex;gap:8px;align-items:center;border:1px solid #999;box-shadow:inset 1px 1px 0 #999;padding:2px 8px}
+  .taskA .tray .dot{width:7px;height:7px;border-radius:50%;background:#00ff9c;box-shadow:0 0 5px #00ff9c;animation:blink 1.4s steps(1) infinite}
+  @keyframes blink{50%{opacity:.25}}
+
+  /* ---------- TILE B : lens ---------- */
+  .stageB{display:grid;grid-template-columns:1fr 1fr}
+  .half{position:relative;padding:20px 18px;min-height:300px;overflow:hidden}
+  .half.retro{background:#efe9dc;color:#222;font-family:var(--retro)}
+  .half.modern{background:#1a1815;color:#e8e4da;font-family:var(--sys)}
+  .lens{
+    position:absolute;top:50%;left:50%;width:120px;height:120px;border-radius:50%;
+    transform:translate(-50%,-50%);
+    border:2px solid #d8ff3d;
+    box-shadow:0 0 0 3px rgba(26,24,21,.55),0 10px 30px rgba(0,0,0,.5);
+    pointer-events:none;
+    background:radial-gradient(circle,#1a1815 0 98%,transparent 100%);
+  }
+  .tileB:hover .lens{transform:translate(-50%,-50%) scale(1.12)}
+  .retro h3{font-size:19px;text-align:center;animation:blinker 1.2s steps(1) infinite}
+  @keyframes blinker{50%{opacity:0}}
+  .retro hr{border:0;border-top:1px solid #999;margin:10px 0}
+  .retro p,.retro li{font-size:12px;line-height:1.55}
+  .retro a{color:#00e;text-decoration:underline}
+  .retro .counter{display:inline-block;font-family:var(--mono);background:#111;color:#5f5;font-size:10px;padding:2px 7px;letter-spacing:.2em;margin-top:10px}
+  .modern h3{font-size:15px;font-weight:800;letter-spacing:-.01em}
+  .modern .big{font-size:34px;font-weight:800;color:#d8ff3d;letter-spacing:-.03em;line-height:1;margin:10px 0 2px}
+  .modern .lbl{font-family:var(--mono);font-size:9px;color:#8a8577;letter-spacing:.14em;text-transform:uppercase}
+  .modern .row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:10px;font-family:var(--mono);color:#b9b3a4}
+  .modern .row .tr{flex:1;height:5px;background:#2b2822;border-radius:3px;overflow:hidden}
+  .modern .row .tr i{display:block;height:100%;background:#d8ff3d}
+  .seam{position:absolute;left:50%;top:0;bottom:0;width:1px;background:#3a3a35}
+
+  /* ---------- TILE C : topo ---------- */
+  .stageC{background:
+    radial-gradient(90% 60% at 70% 120%,#0e1626 0%,transparent 70%),
+    #070b12;
+    color:#8fa0b3}
+  .stageC svg.map{position:absolute;inset:0;width:100%;height:100%}
+  .logC{
+    position:absolute;left:14px;bottom:58px;width:min(52%,250px);
+    background:rgba(4,8,14,.88);border:1px solid #1c2b22;border-radius:3px;
+    padding:10px 12px;font-size:10px;line-height:1.8;color:#5fe8a0;
+    backdrop-filter:blur(2px);
+  }
+  .logC .h{color:#39584a;letter-spacing:.08em;margin-bottom:5px}
+  .logC .cur{display:inline-block;width:6px;height:10px;background:#5fe8a0;vertical-align:-1px;animation:blink 1s steps(1) infinite}
+  .altC{position:absolute;right:16px;top:34px;text-align:right;font-size:10px;color:#5b6572;letter-spacing:.12em}
+  .altC b{display:block;font-family:var(--sys);font-weight:800;font-size:26px;color:#e8d99a;letter-spacing:0}
+  .compass{position:absolute;right:18px;bottom:16px;width:34px;height:34px;opacity:.7;animation:spin 24s linear infinite}
+  .camps{position:absolute;left:14px;bottom:12px;font-size:9px;color:#54626f;letter-spacing:.08em;line-height:1.9}
+
+  footer{
+    max-width:1240px;margin:46px auto 0;border-top:1px solid #232a33;padding-top:22px;
+    display:flex;gap:28px;flex-wrap:wrap;font-size:11px;color:#5b6572;line-height:1.8
+  }
+  footer .mix{color:#aeb7c4}
+  footer .mix em{color:#d8ff3d;font-style:normal}
+  footer a{color:#8a93a1}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">personal-web <b>· vibe check</b> · 3 directions · sep 2026</div>
+  <h1>which <span class="fade">mikhail</span> are we building?</h1>
+  <p class="sub">One page, three vibes — the resume is the design engine in all of them:
+  <em>2B rows/day, a DAG you built yourself, ClickHouse, Kota Belud under Kinabalu.</em>
+  These are thumbnails; the real interactive prototypes are one click away below.</p>
+</header>
+
+<div class="grid">
+
+  <!-- ===== A ===== -->
+  <section class="tile">
+    <div class="stage stageA">
+      <div class="num">01 / MAXIMALIST</div>
+      <div class="tickerA"><span class="chip">NEW PIPELINE ALERT</span>
+        <span class="run">2,000,000,000 ROWS/DAY &nbsp;·&nbsp; CHECK OUT THE DAG COLLECTION &nbsp;·&nbsp; UPTIME 99.98% &nbsp;·&nbsp; NOW HIRING: FULL-TIME MIKHAIL &nbsp;·&nbsp; 2,000,000,000 ROWS/DAY &nbsp;·&nbsp; CHECK OUT THE DAG COLLECTION &nbsp;·&nbsp; UPTIME 99.98% &nbsp;·&nbsp; NOW HIRING: FULL-TIME MIKHAIL &nbsp;·&nbsp;</span>
+      </div>
+      <div class="deskA">
+        <div class="iconA"><span class="gl">▤</span> my_data/</div>
+        <div class="iconA"><span class="gl">⚙</span> pipeline.exe</div>
+        <div class="iconA"><span class="gl">✉</span> guestbook.htm</div>
+        <div class="titleA">mikh4il.sys</div>
+      </div>
+      <div class="winA">
+        <div class="bar"><span>sysinfo.exe</span><span class="b"><i></i><i></i><i></i></span></div>
+        <div class="body">
+          <div class="mbar"><span>SQL</span><span class="track"><span class="fill" style="width:92%"></span></span><span>92%</span></div>
+          <div class="mbar"><span>PySpark</span><span class="track"><span class="fill" style="width:88%"></span></span><span>88%</span></div>
+          <div class="mbar"><span>ClickHouse</span><span class="track"><span class="fill" style="width:76%"></span></span><span>76%</span></div>
+          <div class="mbar"><span>Linux</span><span class="track"><span class="fill" style="width:85%"></span></span><span>85%</span></div>
+        </div>
+      </div>
+      <div class="winA2">
+        <div class="bar">▮ now_processing.wma</div>
+        <div class="body">u-mobile-dscvm — cdr_ingest_2B_rows.parquet
+          <div class="eq">
+            <i style="--h:12px;animation-delay:0s"></i><i style="--h:20px;animation-delay:.1s"></i><i style="--h:9px;animation-delay:.2s"></i><i style="--h:16px;animation-delay:.05s"></i><i style="--h:22px;animation-delay:.3s"></i><i style="--h:7px;animation-delay:.15s"></i><i style="--h:14px;animation-delay:.25s"></i><i style="--h:19px;animation-delay:.4s"></i><i style="--h:11px;animation-delay:.55s"></i><i style="--h:17px;animation-delay:.35s"></i><i style="--h:8px;animation-delay:.6s"></i><i style="--h:21px;animation-delay:.45s"></i>
+          </div>
+        </div>
+      </div>
+      <div class="taskA"><span class="start"><i></i>Start</span><span class="tb">sysinfo.exe</span><span class="tb">pipeline.exe</span><span class="tray">● <span>LNK</span> 12:57 PM</span></div>
+    </div>
+    <div class="meta">
+      <h2>MIKHAIL.SYS</h2>
+      <p class="pitch">Windows-98 desktop, but it lives in a <em>server room</em>. Beveled windows that actually drag, a Winamp player whose tracks are your projects, Shut Down = “IT IS NOW SAFE TO INTERVIEW MIKHAIL”.</p>
+      <div class="pal"><i style="background:#101418"></i><i style="background:#d4d0c8"></i><i style="background:#00ff9c"></i><i style="background:#00e5ff"></i><i style="background:#ff2d95"></i></div>
+      <div class="tags"><span>draggable windows</span><span>marquee</span><span>CRT scanlines</span><span>clippy RAG chatbot</span></div>
+      <a class="open" href="alpha-sys.html">→ open alpha-sys.html</a>
+    </div>
+  </section>
+
+  <!-- ===== B ===== -->
+  <section class="tile tileB">
+    <div class="stage stageB">
+      <div class="num">02 / TWO-LAYER</div>
+      <div class="half retro">
+        <h3>~*~ Welcome ~*~</h3>
+        <hr>
+        <p>hi, u hav reached the home page of <b>Mikhail Bin Yassin</b>, data engineer-in-training, Kota Belud, Sabah!!</p>
+        <p style="margin-top:8px">about me · <a>my fav sites</a> · <a>guestbook</a></p>
+        <p class="counter">▮ visitor 0133742</p>
+        <p style="margin-top:8px;font-size:11px">🚧 best viewed at 800×600 🚧</p>
+      </div>
+      <div class="half modern">
+        <div class="lbl">skills.profile — live</div>
+        <div class="big">3.85</div>
+        <div class="lbl">cgpa · data engineering</div>
+        <div style="margin-top:12px">
+          <div class="row"><span style="width:52px">pyspark</span><span class="tr"><i style="width:88%"></i></span></div>
+          <div class="row"><span style="width:52px">sql</span><span class="tr"><i style="width:95%"></i></span></div>
+          <div class="row"><span style="width:52px">chdb</span><span class="tr"><i style="width:80%"></i></span></div>
+        </div>
+        <div class="lbl" style="margin-top:14px">rows.processed / day — 2.0e9</div>
+      </div>
+      <div class="seam"></div>
+      <div class="lens" title="the lens follows your cursor in the real prototype"></div>
+    </div>
+    <div class="meta">
+      <h2>UNDER THE SURFACE</h2>
+      <p class="pitch">A sincere 1999 homepage on top. Hover anywhere and a circular <em>lens</em> follows your cursor, revealing the same layout re-rendered as a modern data-portfolio underneath. Hold Tab to see the whole modern layer.</p>
+      <div class="pal"><i style="background:#efe9dc"></i><i style="background:#222"></i><i style="background:#1a1815"></i><i style="background:#d8ff3d"></i></div>
+      <div class="tags"><span>hover lens</span><span>1999 / 2026</span><span>hud chip</span><span>tab toggle</span></div>
+      <a class="open" href="beta-lens.html">→ open beta-lens.html</a>
+    </div>
+  </section>
+
+  <!-- ===== C ===== -->
+  <section class="tile">
+    <div class="stage stageC">
+      <div class="num">03 / NARRATIVE</div>
+      <svg class="map" viewBox="0 0 420 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <!-- contours -->
+        <g fill="none" stroke="#3a4e66" stroke-width=".7">
+          <path d="M290 290 C 240 240, 235 200, 262 170 C 288 140, 330 138, 352 168 C 376 200, 370 250, 330 288 Z"/>
+          <path d="M298 284 C 256 242, 252 205, 274 180 C 296 156, 328 155, 346 180 C 366 206, 361 248, 328 282 Z"/>
+          <path d="M306 276 C 272 244, 268 212, 286 194 C 304 174, 324 173, 338 194 C 354 216, 350 246, 324 274 Z"/>
+          <path d="M314 266 C 288 246, 285 221, 297 208 C 309 193, 321 192, 330 208 C 341 224, 339 244, 321 264 Z"/>
+          <path d="M322 254 C 302 246, 300 230, 308 221 C 315 212, 320 212, 324 220 C 330 230, 329 242, 320 252 Z"/>
+        </g>
+        <text x="336" y="160" fill="#54626f" font-size="7" font-family="ui-monospace,monospace">4,095m — LOW'S PEAK</text>
+        <text x="300" y="290" fill="#3c4c60" font-size="6.5" font-family="ui-monospace,monospace">620m</text>
+        <!-- stars -->
+        <g fill="#c9d6e4">
+          <circle cx="40" cy="40" r=".8"/><circle cx="90" cy="70" r=".6"/><circle cx="150" cy="35" r=".8"/><circle cx="210" cy="60" r=".5"/><circle cx="255" cy="30" r=".7"/><circle cx="120" cy="110" r=".5"/><circle cx="60" cy="140" r=".7"/><circle cx="190" cy="120" r=".6"/><circle cx="370" cy="60" r=".6"/><circle cx="330" cy="40" r=".5"/><circle cx="20" cy="90" r=".5"/><circle cx="290" cy="80" r=".6"/>
+        </g>
+        <!-- trail -->
+        <path d="M40 262 C 90 258, 120 246, 150 234 C 190 218, 205 210, 232 196 C 258 183, 268 172, 300 140" fill="none" stroke="#e8d99a" stroke-width="1.4" stroke-dasharray="5 5" opacity=".9"/>
+        <!-- camps -->
+        <g fill="#0c1220" stroke="#e8d99a" stroke-width="1">
+          <circle cx="40" cy="262" r="5"/><circle cx="118" cy="246" r="5"/><circle cx="178" cy="224" r="5"/><circle cx="232" cy="196" r="5"/><circle cx="272" cy="166" r="5"/><circle cx="304" cy="142" r="5"/>
+        </g>
+        <g fill="#e8d99a" font-size="6.5" font-family="ui-monospace,monospace">
+          <text x="48" y="272">KOTA BELUD · 0m</text>
+          <text x="126" y="256">UIIT UIITM · 812m</text>
+          <text x="186" y="234">UTM JB · 1,866m</text>
+          <text x="240" y="206">FYP CAMP</text>
+          <text x="280" y="176">U MOBILE RIDGE</text>
+          <text x="312" y="150">???</text>
+        </g>
+      </svg>
+      <div class="altC">ALTITUDE<b>3,272 m</b></div>
+      <div class="logC">
+        <div class="h">expedition.log — tail -f</div>
+        d41 05:41:09 [base] kota belud, sabah — dawn, sea of clouds below.<br>
+        massif above. i summit, no switchback refused.<br>
+        [u mobile ridge] 09 months above cloud line. ingested 2.0e9 rows/day. pySpark is a good rope.<span class="cur"></span>
+      </div>
+      <div class="camps">CAMP 4/6 — U MOBILE RIDGE<br>SCROLL / NEXT TO ADVANCE</div>
+      <svg class="compass" viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="18" fill="none" stroke="#54626f" stroke-width="1"/>
+        <path d="M20 5 L23 20 L20 35 L17 20 Z" fill="#e8d99a" opacity=".85"/>
+        <path d="M5 20 L20 17 L35 20 L20 23 Z" fill="#3c4c60"/>
+      </svg>
+    </div>
+    <div class="meta">
+      <h2>THE ASCENT</h2>
+      <p class="pitch">Career as a <em>topographic survey</em>. Trail from base camp Kota Belud to Low's Peak; your life stops are the camps. A terminal log streams entries, an altitude counter runs, each camp pops a survey card.</p>
+      <div class="pal"><i style="background:#070b12"></i><i style="background:#31435a"></i><i style="background:#5fe8a0"></i><i style="background:#e8d99a"></i></div>
+      <div class="tags"><span>scroll story</span><span>topo map</span><span>altitude counter</span><span>terminal log</span></div>
+      <a class="open" href="gamma-kinabalu.html">→ open gamma-kinabalu.html</a>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="mix" style="flex:1;min-width:280px">
+    <b style="color:#aeb7c4">MY BET:</b> the merge — <em>C's map</em> as the story page, <em>A's windows</em> as the work pages, <em>B's lens</em> as the landing-page signature moment, all sharing one visual system.
+  </div>
+  <div>files:<br><a href="alpha-sys.html">alpha-sys.html</a> · <a href="beta-lens.html">beta-lens.html</a> · <a href="gamma-kinabalu.html">gamma-kinabalu.html</a></div>
+  <div>mikhail bin yassin · kota belud, sabah<br>best viewed in any modern browser, honestly</div>
+</footer>
+
+</body>
+</html>
