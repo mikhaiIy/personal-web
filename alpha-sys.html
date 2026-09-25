@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mikh4il.sys — MIKHAIL.SYS desktop</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><rect width="16" height="16" fill="%23101418"/><rect x="2" y="3" width="12" height="10" fill="%2300e5ff"/><path d="M4 7h3M9 7h3M4 10h8" stroke="%2300ff9c" stroke-width="1.4"/></svg>'>
+<style>
+/* ============ MIKHAIL.SYS 98 — graphite server room ============ */
+:root{
+  --desktop:#101418; --silver:#d4d0c8; --hi:#fff; --lt:#dfdfdf; --sh:#808080; --dk:#0a0a0a;
+  --navy:#000080; --cyan:#00e5ff; --cyan-dk:#007a8f; --green:#00ff9c; --amber:#ffb000; --magenta:#ff2ea6;
+  --green-bg:#04110b; --phos:#c9ffe9;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"MS Sans Serif",Tahoma,Geneva,sans-serif;font-size:12px;color:#111;
+  background:var(--desktop);overflow:hidden;user-select:none;cursor:default;
+}
+input,textarea{user-select:text;font-family:inherit}
+a{color:inherit;text-decoration:none}
+
+/* ---- bevel kit (classic 98) ---- */
+.raised{border:1px solid;border-color:var(--lt) var(--dk) var(--dk) var(--lt);box-shadow:inset 1px 1px 0 var(--hi),inset -1px -1px 0 var(--sh)}
+.sunken{border:1px solid;border-color:var(--sh) var(--hi) var(--hi) var(--sh);box-shadow:inset 1px 1px 0 var(--dk),inset -1px -1px 0 var(--lt)}
+.btn98{
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  background:var(--silver);padding:3px 10px;font-size:11px;font-family:inherit;color:#111;
+  border:1px solid;border-color:var(--hi) var(--dk) var(--dk) var(--hi);
+  box-shadow:inset 1px 1px 0 var(--lt),inset -1px -1px 0 var(--sh);cursor:pointer;
+}
+.btn98:active,.btn98.on{border-color:var(--dk) var(--hi) var(--hi) var(--dk);box-shadow:inset 1px 1px 0 var(--sh),inset -1px -1px 0 var(--lt)}
+.btn98:focus-visible{outline:1px dotted #000;outline-offset:-4px}
+
+/* ============ TICKER ============ */
+#ticker{
+  position:fixed;top:0;left:0;right:0;height:30px;z-index:900;display:flex;align-items:center;gap:10px;
+  background:linear-gradient(180deg,#3a4550,#181f26 45%,#0b0f14 55%,#232c35);border-bottom:1px solid #000;
+  box-shadow:inset 0 1px 0 #6b7a88;overflow:hidden;white-space:nowrap;
+}
+.chip{
+  flex:none;margin-left:8px;padding:3px 9px;font-weight:bold;font-size:11px;letter-spacing:1px;color:#fff;
+  background:linear-gradient(180deg,#ff5ec4,var(--magenta) 45%,#9c0064);border:1px solid #fff;
+  box-shadow:0 0 8px var(--magenta);animation:blink 1s steps(2,start) infinite;
+}
+.tick-clip{flex:1;overflow:hidden;position:relative;height:100%;display:flex;align-items:center}
+.tick-inner{display:inline-block;white-space:nowrap;animation:tickmove 26s linear infinite;color:var(--cyan);font-weight:bold;letter-spacing:1px;font-size:12px;text-shadow:0 0 6px rgba(0,229,255,.7)}
+.tick-inner b{color:var(--green);text-shadow:0 0 6px rgba(0,255,156,.7)}
+#ticker:hover .tick-inner{animation-play-state:paused}
+@keyframes tickmove{to{transform:translateX(-50%)}}
+@keyframes blink{50%{opacity:0}}
+
+/* ============ DESKTOP ============ */
+#desk{position:fixed;inset:30px 0 34px 0;overflow:hidden}
+#traces{position:absolute;inset:0;width:100%;height:100%;opacity:.55;pointer-events:none}
+.spark{position:absolute;width:18px;height:18px;pointer-events:none;animation:twinkle 2.6s ease-in-out infinite}
+.spark.gold{color:#ffd76a;filter:drop-shadow(0 0 4px rgba(255,215,106,.8))}
+.spark.silver{color:#d7e2ea;filter:drop-shadow(0 0 4px rgba(215,226,234,.8))}
+@keyframes twinkle{0%,100%{transform:scale(.55);opacity:.35}50%{transform:scale(1.15);opacity:1}}
+
+#dtitle{
+  position:absolute;top:34px;left:50%;transform:translateX(-50%);z-index:1;pointer-events:none;
+  font-family:Arial,Helvetica,sans-serif;font-weight:900;font-size:58px;letter-spacing:2px;
+  background:linear-gradient(180deg,#f4f7f9 0%,#aeb9c2 16%,#fff 32%,#69737e 49%,#e6edf2 55%,#7c8792 78%,#f2f6f8 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;position:absolute;
+}
+#dtitle::before,#dtitle::after{content:attr(data-t);position:absolute;left:0;top:0;z-index:-1;background:none;-webkit-text-fill-color:currentColor}
+#dtitle::before{color:var(--cyan);transform:translate(-3px,-1px);opacity:.85}
+#dtitle::after{color:#ff3535;transform:translate(3px,1px);opacity:.8}
+#dsub{position:absolute;top:96px;left:50%;transform:translateX(-50%);color:#5f6d7a;font-size:11px;letter-spacing:3px;z-index:1;pointer-events:none}
+
+/* ---- desktop icons ---- */
+#icons{position:absolute;top:16px;left:14px;display:flex;flex-direction:column;gap:10px;z-index:2}
+.dicon{width:86px;padding:5px 2px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.dicon svg{width:40px;height:40px;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.5))}
+.dicon span{color:#fff;font-size:11px;text-align:center;text-shadow:1px 1px 0 #000,0 0 3px #000;padding:1px 3px;line-height:1.2}
+.dicon:hover span{background:var(--cyan);color:#000;text-shadow:none}
+.dicon:active svg{transform:translate(1px,1px)}
+
+/* ============ WINDOWS ============ */
+.win{
+  position:absolute;display:none;flex-direction:column;background:var(--silver);color:#111;
+  border:1px solid;border-color:var(--lt) var(--dk) var(--dk) var(--lt);
+  box-shadow:inset 1px 1px 0 var(--hi),inset -1px -1px 0 var(--sh),4px 4px 0 rgba(0,0,0,.5);
+  padding:3px;z-index:10;min-width:260px;
+}
+.win.open{display:flex}
+.win.mini{display:none}
+.win.dark{background:#0d1216;color:var(--phos)}
+.tbar{
+  height:22px;flex:none;display:flex;align-items:center;gap:4px;padding:0 3px 0 5px;cursor:move;
+  background:linear-gradient(90deg,#000080,#0f52b0 55%,#0092c9 88%,var(--cyan));
+  color:#fff;font-weight:bold;font-size:12px;letter-spacing:.5px;
+}
+.win.inactive .tbar{background:linear-gradient(90deg,#7d7d7d,#a8a8a8)}
+.tbar .tico{width:14px;height:14px;flex:none}
+.tbar .ttl{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbtn{
+  flex:none;width:18px;height:16px;display:grid;place-items:center;font:bold 10px/1 "Courier New",monospace;
+  background:var(--silver);border:1px solid;border-color:var(--hi) var(--dk) var(--dk) var(--hi);
+  box-shadow:inset 1px 1px 0 var(--lt),inset -1px -1px 0 var(--sh);cursor:pointer;color:#111;
+}
+.tbtn:active{border-color:var(--dk) var(--hi) var(--hi) var(--dk);box-shadow:inset 1px 1px 0 var(--sh)}
+.wbody{flex:1;margin:3px 1px 1px;overflow:auto}
+
+/* menu bar */
+.menubar{display:flex;gap:2px;padding:2px 1px;font-size:11px;flex:none}
+.menubar span{padding:1px 7px}
+.statusbar{flex:none;display:flex;gap:4px;margin-top:3px;font-size:11px}
+.statusbar span{padding:2px 6px;flex:1}
+
+/* ---- sysinfo ---- */
+.prow{display:flex;align-items:center;gap:8px;margin:7px 0}
+.prow label{flex:none;width:110px;font-size:11px;font-weight:bold}
+.pbar{flex:1;height:17px;background:#fff;border:1px solid;border-color:var(--sh) var(--hi) var(--hi) var(--sh);box-shadow:inset 1px 1px 0 var(--dk),inset -1px -1px 0 var(--lt);position:relative;overflow:hidden}
+.pfill{
+  height:100%;width:0;background:var(--cyan);position:relative;overflow:hidden;
+  background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.55) 0 5px,transparent 5px 10px),linear-gradient(90deg,var(--cyan),var(--cyan));
+  animation:stripemove .7s linear infinite;transition:width 1.4s cubic-bezier(.2,.8,.3,1);
+}
+.pfill.hot{background-color:var(--green)}
+.pfill.warn{background-color:var(--amber)}
+@keyframes stripemove{to{background-position:28px 0,0 0}}
+.flist{font-family:"Courier New",monospace;font-size:11.5px;line-height:1.5;padding:6px 8px;white-space:pre;overflow:auto}
+.flist b{color:var(--cyan-dk)}
+.flist .ok{color:#0a7a3d;font-weight:bold}
+
+/* ---- pipeline (dark phosphor) ---- */
+.dagwrap{position:relative;background:radial-gradient(120% 140% at 50% 0%,#06201400,var(--green-bg)),var(--green-bg)}
+.dagbar{display:flex;align-items:center;gap:8px;padding:6px 8px;flex:none;font-size:11px;color:var(--green)}
+#dagtip{
+  position:absolute;display:none;z-index:5;max-width:250px;padding:6px 8px;font-size:11px;line-height:1.45;
+  background:#01130a;border:1px solid var(--green);color:var(--phos);box-shadow:3px 3px 0 rgba(0,0,0,.6);pointer-events:none;
+}
+#dagtip b{color:var(--cyan)}
+#dag svg{display:block;width:100%;height:auto}
+#dag .flow{fill:none;stroke:var(--green);stroke-width:2;stroke-dasharray:7 9;animation:dashflow 1.05s linear infinite;opacity:.9}
+#dag .flow.dim{stroke:var(--cyan);stroke-dasharray:3 7;opacity:.6;animation-duration:1.6s}
+@keyframes dashflow{to{stroke-dashoffset:-16}}
+#dag .noder rect{fill:#062b1c;stroke:var(--green);stroke-width:1.5;filter:drop-shadow(0 0 3px rgba(0,255,156,.45))}
+#dag .noder.hov rect{fill:#0a4a30;stroke:#fff;filter:drop-shadow(0 0 6px var(--cyan))}
+#dag .noder text{fill:var(--phos);font:bold 12px "Courier New",monospace;text-anchor:middle}
+#dag .noder{cursor:help}
+#dag .packet{fill:#fff;filter:drop-shadow(0 0 4px var(--green))}
+.win.paused .flow,.win.paused .dim{animation-play-state:paused}
+
+/* ---- player (dark winamp) ---- */
+#win-player{width:342px}
+.pl-body{background:linear-gradient(180deg,#13181d,#07090c);color:var(--green);padding:8px}
+.pl-screen{padding:6px 8px;background:#010c06;border:1px solid;border-color:#123b28 var(--hi) var(--hi) #123b28;font-family:"Courier New",monospace}
+.pl-time{font-size:26px;font-weight:bold;color:#7bffb0;letter-spacing:2px;text-shadow:0 0 8px rgba(0,255,156,.8)}
+.pl-khz{font-size:10px;color:#2f7a55;margin-top:-2px}
+.pl-track{display:flex;align-items:center;gap:6px;margin-top:5px;overflow:hidden}
+.pl-track .m{flex:none;color:var(--cyan);font-weight:bold}
+.pl-scroll{overflow:hidden;white-space:nowrap;flex:1}
+.pl-scroll span{display:inline-block;animation:tickmove 13s linear infinite;color:var(--phos)}
+#eq{display:flex;align-items:flex-end;gap:3px;height:64px;margin:8px 2px 4px;padding:5px;background:#010c06;border:1px solid;border-color:#123b28 var(--hi) var(--hi) #123b28}
+#eq i{flex:1;height:12%;background:linear-gradient(180deg,#ff4040 0%,#ffd700 22%,#00ff9c 55%)}
+.pl-ctl{display:flex;gap:6px;align-items:center;margin-top:6px}
+.pl-ctl .btn98{width:34px;height:24px;padding:0;font:bold 12px "Courier New",monospace;background:#1b2127;color:var(--green);border-color:#3a444d var(--hi) var(--hi) #3a444d;box-shadow:inset 1px 1px 0 #2c343c,inset -1px -1px 0 #000}
+.pl-list{margin-top:8px;font-family:"Courier New",monospace;font-size:11px;line-height:1.6}
+.pl-list div{cursor:pointer;padding:0 4px;color:#3f8f66}
+.pl-list div:hover{background:#0d2a1c}
+.pl-list div.cur{color:var(--phos);background:#123b28}
+
+/* ---- guestbook ---- */
+.gb-bar{display:flex;gap:4px;align-items:center;padding:3px 4px;font-size:11px}
+.gb-url{flex:1;padding:2px 6px;background:#fff}
+.gb-form{display:flex;flex-direction:column;gap:6px;padding:8px}
+.gb-form input,.gb-form textarea{padding:4px 6px;font-size:12px;resize:none}
+.gb-entry{border-top:1px dotted #8a8a8a;padding:7px 10px}
+.gb-entry:first-child{border-top:none}
+.gb-head{display:flex;justify-content:space-between;gap:8px}
+.gb-head b{color:var(--navy)}
+.gb-date{font-size:10px;color:#777;font-family:"Courier New",monospace}
+.gb-msg{margin-top:2px;line-height:1.4}
+
+/* ---- contact ---- */
+.b88{
+  width:88px;height:31px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font:bold 9px/1.25 Tahoma,sans-serif;text-align:center;color:#fff;letter-spacing:.4px;
+  border:2px solid;border-color:#fff #1a1a1a #1a1a1a #fff;box-shadow:1px 1px 0 rgba(0,0,0,.6);
+  cursor:pointer;image-rendering:pixelated;
+}
+.b88:hover{filter:brightness(1.2)}
+.b88:active{border-color:#1a1a1a #fff #fff #1a1a1a}
+.b88 small{font-weight:normal;font-size:7px;opacity:.85}
+.vc-github{background:linear-gradient(180deg,#123a24,#071f13)}
+.vc-linkedin{background:linear-gradient(180deg,#0aa3c2,#00506b)}
+.vc-mail{background:linear-gradient(180deg,#3a3f46,#14171b);color:var(--cyan)}
+
+/* ---- folder / recycle ---- */
+.frow{display:flex;align-items:center;gap:7px;padding:3px 8px;font-size:12px;cursor:default}
+.frow svg{width:17px;height:17px;flex:none}
+.frow .fmeta{margin-left:auto;font-family:"Courier New",monospace;font-size:10.5px;color:#666}
+.frow.sel{background:var(--navy);color:#fff}
+.frow[data-open]{cursor:pointer}
+.frow[data-open]:hover .fmeta{color:inherit}
+
+/* ============ CORNER WIDGETS ============ */
+.widget{position:absolute;z-index:3}
+#counter{right:16px;bottom:14px;padding:6px 8px;background:var(--silver)}
+#counter .lbl{font-size:9px;font-weight:bold;letter-spacing:1px;margin-bottom:3px;display:flex;justify-content:space-between;gap:10px}
+#odo{display:flex;gap:2px}
+#odo i{
+  width:15px;height:22px;display:grid;place-items:center;font:bold 15px "Courier New",monospace;font-style:normal;
+  background:#0a0d10;color:#8fff2f;border:1px solid;border-color:var(--sh) var(--hi) var(--hi) var(--sh);
+  box-shadow:inset 1px 1px 2px #000;text-shadow:0 0 5px #8fff2f;
+}
+#weather{right:16px;bottom:78px;width:200px;padding:6px 8px;background:var(--silver)}
+#weather h4{font-size:10px;letter-spacing:1px;display:flex;align-items:center;gap:6px}
+#weather p{font-size:10.5px;margin-top:3px;line-height:1.35}
+#sticky{
+  right:22px;top:120px;width:150px;padding:22px 10px 12px;background:linear-gradient(180deg,#fff9b0,#f5e96a);
+  color:#4a3b00;font-family:"Courier New",monospace;font-size:13px;font-weight:bold;transform:rotate(2.5deg);
+  border:1px solid;border-color:var(--hi) var(--sh) var(--sh) var(--hi);box-shadow:3px 4px 0 rgba(0,0,0,.45);
+}
+#sticky::before{content:"";position:absolute;top:8px;left:50%;transform:translateX(-50%) rotate(-1deg);width:64px;height:9px;background:rgba(255,255,255,.55);border:1px solid rgba(0,0,0,.08)}
+#sticky span{display:block;margin-top:8px;font-size:9px;font-weight:normal;opacity:.6}
+
+/* ============ FOOTER ============ */
+#footprint{position:absolute;bottom:8px;left:0;right:0;text-align:center;color:#4d5860;font-size:10px;letter-spacing:.5px;z-index:1;pointer-events:none}
+#footprint b{color:#6e7c87}
+
+/* ============ TASKBAR ============ */
+#bar{
+  position:fixed;left:0;right:0;bottom:0;height:34px;z-index:950;display:flex;align-items:stretch;gap:4px;padding:3px 4px;
+  background:linear-gradient(180deg,#3a4550,#181f26 8%,#0b0f14 60%,#232c35);border-top:1px solid #6b7a88;
+}
+#startbtn{display:flex;align-items:center;gap:6px;padding:0 12px;font-weight:bold;font-size:13px;font-style:italic;color:#fff;
+  border:1px solid;border-color:var(--hi) var(--dk) var(--dk) var(--hi);box-shadow:inset 1px 1px 0 var(--lt),inset -1px -1px 0 var(--sh);
+  background:linear-gradient(180deg,#2c3640,#131a20);cursor:pointer;flex:none}
+#startbtn.on{border-color:var(--dk) var(--hi) var(--hi) var(--dk);background:#0b0f14}
+#tasks{flex:1;display:flex;gap:4px;overflow:hidden}
+.tsk{
+  flex:none;max-width:180px;display:flex;align-items:center;gap:6px;padding:0 8px;font-size:11px;color:#cfe3ee;overflow:hidden;
+  background:linear-gradient(180deg,#2c3640,#131a20);border:1px solid;border-color:var(--hi) var(--dk) var(--dk) var(--hi);cursor:pointer;white-space:nowrap;
+}
+.tsk.active{background:#0d1114;color:#fff;border-color:var(--dk) var(--hi) var(--hi) var(--dk);box-shadow:inset 1px 1px 2px #000}
+.tsk svg{width:14px;height:14px;flex:none}
+#tray{flex:none;display:flex;align-items:center;gap:9px;padding:0 8px;color:#cfe3ee;font-size:11px;
+  border:1px solid;border-color:var(--sh) var(--hi) var(--hi) var(--sh);box-shadow:inset 1px 1px 0 var(--dk)}
+#crtbtn{padding:1px 6px;font-size:10px;font-weight:bold;color:var(--cyan);letter-spacing:1px;
+  border:1px solid;border-color:var(--hi) var(--dk) var(--dk) var(--hi);background:#1b2129;cursor:pointer}
+#crtbtn.on{border-color:var(--dk) var(--hi) var(--hi) var(--dk);background:#00313d;color:var(--green)}
+#linklight{display:flex;align-items:center;gap:4px;color:var(--green)}
+#linklight i{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 1.4s steps(2,start) infinite}
+#clock{font-variant-numeric:tabular-nums;min-width:52px;text-align:center}
+
+/* ============ START MENU ============ */
+#startmenu{
+  position:fixed;left:4px;bottom:38px;z-index:960;display:none;width:224px;padding:3px;
+  background:var(--silver);border:1px solid;border-color:var(--hi) var(--dk) var(--dk) var(--hi);
+  box-shadow:inset 1px 1px 0 var(--lt),inset -1px -1px 0 var(--sh),3px -3px 0 rgba(0,0,0,.4);
+}
+#startmenu.open{display:flex}
+.sm-side{
+  flex:none;width:26px;margin-right:4px;background:linear-gradient(180deg,#000080,#00466e 70%,var(--cyan));
+  color:#fff;font-weight:bold;font-size:13px;letter-spacing:2px;writing-mode:vertical-rl;transform:rotate(180deg);
+  display:flex;align-items:center;padding:8px 0;text-shadow:1px 1px 2px #000;
+}
+.sm-list{flex:1;display:flex;flex-direction:column}
+.smi{display:flex;align-items:center;gap:9px;padding:6px 8px;font-size:12px;cursor:pointer}
+.smi svg{width:20px;height:20px;flex:none}
+.smi:hover{background:var(--navy);color:#fff}
+.smi hr{width:100%;border:0;border-top:1px solid var(--sh);border-bottom:1px solid var(--hi);margin:3px 0;pointer-events:none}
+
+/* ============ CRT + SHUTDOWN ============ */
+#crt{position:fixed;inset:0;z-index:990;pointer-events:none;display:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px)}
+body.crton #crt{display:block;animation:crtflick 5s steps(3) infinite}
+@keyframes crtflick{0%,100%{opacity:1}33%{opacity:.88}66%{opacity:.95}}
+body.crton #dtitle{filter:saturate(1.3)}
+#shutdown{position:fixed;inset:0;z-index:1000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:#000080;cursor:pointer;text-align:center;padding:20px}
+#shutdown.show{display:flex}
+#shutdown h2{color:#ffa826;font-size:30px;font-family:Tahoma,sans-serif;text-shadow:2px 2px 0 #000}
+#shutdown .big{color:#ffb84d;font-size:44px;font-weight:900;letter-spacing:2px;animation:blink 1s steps(2,start) infinite;text-shadow:0 0 22px rgba(255,168,38,.55)}
+#shutdown p{color:#8fa3ff;font-size:13px}
+
+/* ============ 1024 fallback ============ */
+@media (max-width:1100px){
+  #dtitle{font-size:42px}
+  #sticky{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .tick-inner,.pl-scroll span,.pfill,.spark,.chip,#linklight i,#shutdown .big,body.crton #crt{animation:none}
+}
+/* ============ CLIPPY.EXE — office assistant (local RAG) ============ */
+#clippy{position:fixed;right:16px;bottom:46px;width:84px;height:84px;z-index:940;cursor:pointer;filter:drop-shadow(2px 3px 0 rgba(0,0,0,.45));transition:transform .16s ease}
+#clippy:hover{transform:scale(1.05)}
+#clippy .body{animation:bob 3.4s ease-in-out infinite;transform-origin:50% 80%}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-5px) rotate(-2.5deg)}}
+#clippy.excited .body{animation:hop .5s ease-in-out 2}
+@keyframes hop{0%,100%{transform:translateY(0)}30%{transform:translateY(-9px) rotate(4deg)}60%{transform:translateY(2px)}}
+#clippy.confused .body{animation:shake .45s ease-in-out 2}
+@keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-7deg)}75%{transform:rotate(7deg)}}
+.pupils{transition:transform .09s linear}
+
+/* tip balloon */
+#cltip{position:fixed;right:108px;bottom:74px;z-index:941;max-width:300px;display:none;cursor:pointer;
+  background:#ffffe1;color:#111;padding:11px 13px;font-size:12px;line-height:1.5;
+  border:1px solid #000;border-radius:8px;
+  box-shadow:2px 3px 0 rgba(0,0,0,.45),inset 0 0 0 2px #fff,inset 0 0 0 3px #c9c4b6}
+#cltip.show{display:block;animation:popin .22s cubic-bezier(.2,1.4,.5,1)}
+@keyframes popin{from{transform:scale(.7);opacity:0}}
+#cltip::after{content:'';position:absolute;right:-10px;bottom:18px;border:6px solid transparent;border-left-color:#ffffe1;filter:drop-shadow(1px 1px 0 #000)}
+#cltip b{display:block;margin-bottom:2px}
+#cltip .dismiss{position:absolute;top:3px;right:6px;font-size:10px;color:#666;cursor:pointer}
+
+/* clippy chat window */
+#cllog{height:250px;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:9px;background:#eae6dc}
+.cl-m{max-width:86%;padding:7px 11px;font-size:12px;line-height:1.55;position:relative}
+.cl-m.bot{align-self:flex-start;background:#ffffe1;border:1px solid #555;border-radius:10px 10px 10px 2px;box-shadow:1px 2px 0 rgba(0,0,0,.25)}
+.cl-m.me{align-self:flex-end;background:#d9e8f5;border:1px solid #7a99c0;border-radius:10px 10px 2px 10px}
+.cl-m .who{display:block;font-size:9px;letter-spacing:1px;color:#8a8378;margin-bottom:2px}
+.cl-m.bot .who{color:#96743a}
+.cl-m.me .who{color:#5a7ba6}
+.cl-m button{margin-top:5px;margin-right:5px}
+.cl-typing{align-self:flex-start;font-size:11px;color:#96743a;font-style:italic;padding:2px 4px}
+.cl-typing i{animation:blink .8s steps(1) infinite;font-style:normal}
+.cl-typing i:nth-child(2){animation-delay:.2s}
+.cl-typing i:nth-child(3){animation-delay:.4s}
+
+.cl-trace{flex:none;margin:0 8px 6px;background:#04110b;color:var(--green);font-family:"Courier New",monospace;font-size:10px;line-height:1.7;padding:7px 9px;max-height:132px;overflow-y:auto}
+.cl-trace .th{color:#7ef0c0;letter-spacing:1px;margin-bottom:4px}
+.cl-trace .tr{display:flex;align-items:center;gap:7px;margin:2px 0}
+.cl-trace .tid{flex:none;width:44px;color:#2f7a55}
+.cl-trace .tscore{flex:none;width:74px;color:var(--cyan)}
+.cl-trace .tbar{flex:1;height:7px;background:#0a2418;border:1px solid #1d4a3a;position:relative}
+.cl-trace .tfill{position:absolute;inset:0;width:0;background:var(--green);transition:width .5s ease}
+.cl-trace .tname{flex:none;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#c9ffe9}
+.cl-trace .tterms{display:block;color:#5fae8c}
+
+.cl-form{display:flex;gap:5px;padding:0 8px 8px}
+.cl-form input{flex:1;padding:4px 8px;font-size:12px;background:#fff;border:1px solid;border-color:var(--sh) var(--hi) var(--hi) var(--sh)}
+.cl-chips{display:flex;flex-wrap:wrap;gap:5px;padding:0 8px 8px}
+.cl-chip{font-size:10px;padding:2px 8px;cursor:pointer;background:var(--silver);border:1px solid;border-color:var(--hi) var(--dk) var(--dk) var(--hi)}
+.cl-chip:hover{background:#cde8f7;border-color:#000080}
+@media (prefers-reduced-motion:reduce){#clippy .body,#clippy.excited .body,#clippy.confused .body,.cl-typing i{animation:none}}
+
+</style>
+</head>
+<body>
+
+<!-- ============ TICKER ============ -->
+<div id="ticker">
+  <span class="chip">★ NEW PIPELINE ALERT ★</span>
+  <div class="tick-clip"><div class="tick-inner" id="ticktext"></div></div>
+</div>
+
+<!-- ============ DESKTOP ============ -->
+<div id="desk">
+  <!-- circuit-trace wallpaper doodads -->
+  <svg id="traces" viewBox="0 0 1440 860" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g fill="none" stroke="#0f3d33" stroke-width="2" opacity=".8">
+      <path d="M-10 120 H240 l30 30 V320 l40 40 H520"/>
+      <path d="M-10 640 H180 l50 -50 V430 h60"/>
+      <path d="M1450 200 H1240 l-40 40 V420 l-60 60 H980"/>
+      <path d="M1450 700 H1180 l-30 -30 V560"/>
+      <path d="M700 870 V760 l40 -40 h180 l30 30"/>
+    </g>
+    <g fill="none" stroke="#123c4a" stroke-width="2">
+      <path d="M-10 780 H420 l36 -36 H700"/>
+      <path d="M1450 520 H1330 l-24 24 v120 l-40 40 H1120"/>
+    </g>
+    <g fill="#00e5ff" opacity=".35">
+      <circle cx="270" cy="120" r="4"/><circle cx="520" cy="390" r="4"/><circle cx="980" cy="480" r="4"/>
+      <circle cx="700" cy="724" r="4"/><circle cx="1120" cy="704" r="4"/><circle cx="300" cy="430" r="4"/>
+    </g>
+    <g fill="#00ff9c" opacity=".3">
+      <circle cx="240" cy="320" r="3.5"/><circle cx="1240" cy="200" r="3.5"/><circle cx="180" cy="640" r="3.5"/>
+    </g>
+  </svg>
+
+  <!-- chrome title with chromatic aberration -->
+  <div id="dtitle" data-t="mikh4il.sys">mikh4il.sys</div>
+  <div id="dsub">A WINDOWS-98 DESKTOP THAT LIVES IN A SERVER ROOM · v9.8.5 · Y2K COMPLIANT</div>
+
+  <!-- desktop icons -->
+  <div id="icons">
+    <div class="dicon" data-open="mydata" title="Open My Data">
+      <svg viewBox="0 0 48 48"><path fill="#e8c352" stroke="#8a6a10" d="M3 10h15l4 5h23v27a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/><path fill="#ffe08a" stroke="#8a6a10" d="M3 17h42v25a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/></svg>
+      <span>My Data</span>
+    </div>
+    <div class="dicon" data-open="pipeline" title="Run the DAG">
+      <svg viewBox="0 0 48 48"><rect x="4" y="4" width="40" height="40" rx="3" fill="#04110b" stroke="#00ff9c" stroke-width="2"/><path d="M10 16h9m5 0h9M14 24h20M10 32h8m5 0h14" stroke="#00ff9c" stroke-width="2"/><circle cx="19" cy="16" r="2.4" fill="#00e5ff"/><circle cx="28" cy="24" r="2.4" fill="#00e5ff"/><circle cx="23" cy="32" r="2.4" fill="#00e5ff"/></svg>
+      <span>pipeline.exe</span>
+    </div>
+    <div class="dicon" data-open="sysinfo" title="Skill bars &amp; credentials">
+      <svg viewBox="0 0 48 48"><rect x="4" y="6" width="40" height="36" rx="3" fill="#d4d0c8" stroke="#555"/><rect x="4" y="6" width="40" height="8" fill="#000080"/><rect x="9" y="20" width="30" height="5" fill="#00e5ff"/><rect x="9" y="29" width="20" height="5" fill="#00ff9c"/><rect x="9" y="36" width="25" height="4" fill="#ffb000"/></svg>
+      <span>sysinfo.exe</span>
+    </div>
+    <div class="dicon" data-open="guestbook" title="Sign the guestbook">
+      <svg viewBox="0 0 48 48"><rect x="8" y="4" width="32" height="40" rx="2" fill="#fff" stroke="#666"/><path d="M8 10h32M8 16h32M8 22h24M8 28h32M8 34h20" stroke="#9fb6c4" stroke-width="2"/><circle cx="24" cy="41" r="4" fill="#ff2ea6"/></svg>
+      <span>guestbook.htm</span>
+    </div>
+    <div class="dicon" data-open="recycle" title="Recycle Bin">
+      <svg viewBox="0 0 48 48"><path fill="#9fb2bd" stroke="#4c5b66" d="M12 14h24l-3 28a3 3 0 0 1-3 3H18a3 3 0 0 1-3-3z"/><path d="M18 20v18M24 20v18M30 20v18" stroke="#4c5b66" stroke-width="2"/><path d="M9 10h30v4H9z" fill="#c7d3da" stroke="#4c5b66"/><path d="M19 10c0-4 3-6 5-6s5 2 5 6" fill="none" stroke="#4c5b66" stroke-width="2"/></svg>
+      <span>Recycle Bin</span>
+    </div>
+  </div>
+
+  <!-- corner widgets -->
+  <div id="sticky" class="widget">rm -rf doubt<span>— ~/.zshrc, probably</span></div>
+  <div id="weather" class="widget raised">
+    <h4><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="9" cy="9" r="5" fill="#ffd76a" stroke="#b8860b"/><path d="M2 18a5 5 0 0 1 9-3 4 4 0 0 1 8 1 3.5 3.5 0 0 1-1 7H6a4 4 0 0 1-4-5z" fill="#dfe9ef" stroke="#7d97a6"/></svg>KOTA BELUD · SABAH</h4>
+    <p>31°C — scattered clouds <i>(cumulus, not ClickHouse)</i>. Humidity: 2B rows worth of sweat.</p>
+  </div>
+  <div id="counter" class="widget raised">
+    <div class="lbl"><span>VISITORS ONLINE</span><span>SINCE 1999</span></div>
+    <div id="odo"><i>0</i><i>0</i><i>0</i><i>0</i><i>0</i><i>0</i><i>0</i><i>0</i></div>
+  </div>
+
+  <div id="footprint"><b>best viewed in Netscape Navigator 4.0</b> — or any modern browser, honestly · © 1999–2026 Mikhail Bin Yassin, Kota Belud Chapter</div>
+
+  <!-- ============ WINDOWS ============ -->
+  <!-- My Data -->
+  <section class="win" id="win-mydata" data-x="300" data-y="140" style="width:470px">
+    <div class="tbar"><svg class="tico" viewBox="0 0 16 16"><path fill="#e8c352" stroke="#8a6a10" d="M1 3h5l2 2h7v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1z"/></svg><span class="ttl">My Data</span><button class="tbtn" data-min title="Minimize">_</button><button class="tbtn" data-close title="Close">✕</button></div>
+    <div class="menubar"><span><u>F</u>ile</span><span><u>E</u>dit</span><span><u>V</u>iew</span><span><u>H</u>elp</span></div>
+    <div class="wbody">
+      <div class="gb-bar"><span class="sunken" style="flex:1;padding:2px 6px;background:#fff">C:\MIKHAIL\MY_DATA</span></div>
+      <div class="flist sunken">
+        <div class="frow" data-open="pipeline"><svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#04110b" stroke="#00ff9c"/><path d="M3 6h4m3 0h3M5 11h6" stroke="#00ff9c"/></svg> fyp_dag_scheduler.exe <span class="fmeta">Final-Year Project · 668 KB</span></div>
+        <div class="frow" data-open="player"><svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#0d1216" stroke="#00ff9c"/><path d="M5 4v8l7-4z" fill="#00ff9c"/></svg> now_processing.wma <span class="fmeta">U Mobile sessions · 2B plays</span></div>
+        <div class="frow" data-open="sysinfo"><svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#d4d0c8" stroke="#555"/><rect y="2" width="16" height="3" fill="#000080"/><rect x="3" y="8" width="10" height="2" fill="#00e5ff"/><rect x="3" y="12" width="6" height="2" fill="#00ff9c"/></svg> skill_matrix.sys <span class="fmeta">6 modules · all green*</span></div>
+        <div class="frow" data-open="sysinfo"><svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#fff" stroke="#888"/><path d="M3 5h10M3 8h10M3 11h6" stroke="#567"/></svg> certs_and_education.log <span class="fmeta">UTM CGPA 3.85 · 4 certs</span></div>
+        <div class="frow" data-open="guestbook"><svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#fff" stroke="#888"/><path d="M2 3h12M2 6h12M2 9h8" stroke="#9ab"/></svg> kindergarten_web.wbl <span class="fmeta">WBL · Best Group ✓</span></div>
+        <div class="frow" data-open="guestbook"><svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#fff" stroke="#888"/><path d="M2 3h12M2 6h12M2 9h8" stroke="#9ab"/></svg> autism_center_web.wbl <span class="fmeta">WBL · Best Group ✓</span></div>
+        <div class="frow" data-open="contact"><svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#00303c" stroke="#00e5ff"/><path d="M2 5l6 5 6-5" stroke="#00e5ff" fill="none"/></svg> contact.vcf <span class="fmeta">GitHub · LinkedIn · mail</span></div>
+      </div>
+    </div>
+    <div class="statusbar"><span class="sunken">7 object(s)</span><span class="sunken">2.1 GB of pure hustle</span></div>
+  </section>
+
+  <!-- sysinfo.exe -->
+  <section class="win" id="win-sysinfo" data-x="200" data-y="80" style="width:480px">
+    <div class="tbar"><svg class="tico" viewBox="0 0 16 16"><rect width="16" height="16" fill="#d4d0c8" stroke="#555"/><rect y="2" width="16" height="3" fill="#000080"/></svg><span class="ttl">sysinfo.exe — Skill Diagnostics</span><button class="tbtn" data-min title="Minimize">_</button><button class="tbtn" data-close title="Close">✕</button></div>
+    <div class="menubar"><span><u>F</u>ile</span><span><u>E</u>dit</span><span><u>V</u>iew</span><span><u>H</u>elp</span></div>
+    <div class="wbody" style="padding:8px 10px 4px">
+      <p style="font-size:11px;margin-bottom:2px"><b>SYSTEM SCAN COMPLETE.</b> Loaded modules, benchmarked on production workloads:</p>
+      <div class="prow"><label>SQL</label><div class="pbar"><div class="pfill hot" data-w="92%"></div></div><b style="width:34px;text-align:right">92%</b></div>
+      <div class="prow"><label>PySpark</label><div class="pbar"><div class="pfill hot" data-w="88%"></div></div><b style="width:34px;text-align:right">88%</b></div>
+      <div class="prow"><label>Linux</label><div class="pbar"><div class="pfill hot" data-w="85%"></div></div><b style="width:34px;text-align:right">85%</b></div>
+      <div class="prow"><label>Bash</label><div class="pbar"><div class="pfill" data-w="81%"></div></div><b style="width:34px;text-align:right">81%</b></div>
+      <div class="prow"><label>ClickHouse</label><div class="pbar"><div class="pfill" data-w="76%"></div></div><b style="width:34px;text-align:right">76%</b></div>
+      <div class="prow"><label>OpenTelemetry</label><div class="pbar"><div class="pfill warn" data-w="64%"></div></div><b style="width:34px;text-align:right">64%</b></div>
+      <p style="font-size:10px;color:#555;margin:2px 0 8px">* also speaks: Python · PostgreSQL · Git · ETL design · big data · orchestration</p>
+      <div class="flist sunken" style="height:132px"><b>C:\EDUCATION&gt;</b>
+  utm_bsc_dataeng.log ....... BSc CS (Data Eng), UTM JB · CGPA 3.85 · Oct 2026
+  uitm_foundation.eng ....... Foundation in Engineering · CGPA 4.00 · 2020-21
+  wbl_best_group.medal ...... led 4-person teams ×2 · Best Group, both times
+<b>C:\CERTS&gt;</b>
+  aws_data_engineering.cer .. AWS Academy Data Engineering
+  aws_cloud_architect.cer ... AWS Academy Cloud Architecting
+  google_ai_pro.cer ......... Google AI Professional · Cloud Foundations
+  azure_data_fund.cer ....... Microsoft Azure Data Fundamentals</div>
+    </div>
+    <div class="statusbar"><span class="sunken">6 modules loaded</span><span class="sunken">0 errors, 0 doubts remaining</span></div>
+  </section>
+
+  <!-- pipeline.exe -->
+  <section class="win dark" id="win-pipeline" data-x="620" data-y="64" style="width:660px">
+    <div class="tbar"><svg class="tico" viewBox="0 0 16 16"><rect width="16" height="16" fill="#04110b" stroke="#00ff9c"/><path d="M3 6h4m3 0h3M5 11h6" stroke="#00ff9c"/></svg><span class="ttl">pipeline.exe — FYP_ORCHESTRATOR.DAG</span><button class="tbtn" data-min title="Minimize">_</button><button class="tbtn" data-close title="Close">✕</button></div>
+    <div class="dagbar">
+      <button class="btn98" id="dagbtn" style="background:#123b28;color:var(--green);border-color:#4dff9d #0b2e1e #0b2e1e #4dff9d">⏸ PAUSE</button>
+      <span>dag: fyp_etl_scheduler · tasks: 7 · schedule: @daily 00:00</span>
+      <span style="margin-left:auto;color:var(--cyan)">hover a node for field notes</span>
+    </div>
+    <div class="wbody dagwrap" style="overflow:visible">
+      <svg id="dag" viewBox="0 0 560 238" aria-label="ETL DAG">
+        <path class="flow" d="M104 44 H158"/>
+        <path class="flow" d="M250 44 H304"/>
+        <path class="flow" d="M396 44 H450"/>
+        <path class="flow" d="M496 60 C496 140 286 110 286 188"/>
+        <path class="flow" d="M332 206 H400"/>
+        <path class="flow dim" d="M350 60 C350 140 58 100 58 188"/>
+        <g class="noder" data-tip="<b>extract</b> — U Mobile Data Eng intern: ~2,000,000,000 CDR rows/day pushed through PySpark for a cloud DaaS POC, on-prem big-data platform."><rect x="12" y="28" width="92" height="32" rx="4"/><text x="58" y="48">extract</text></g>
+        <g class="noder" data-tip="<b>validate</b> — schema + null checks before anything touches the warehouse. Requirement gathering came first, always."><rect x="158" y="28" width="92" height="32" rx="4"/><text x="204" y="48">validate</text></g>
+        <g class="noder" data-tip="<b>transform</b> — PySpark &amp; Python ETL for billing, activation and reconciliation reporting; taken from requirement gathering → UAT → production."><rect x="304" y="28" width="92" height="32" rx="4"/><text x="350" y="48">transform</text></g>
+        <g class="noder" data-tip="<b>load</b> — outputs feed a centralized platform-monitoring dashboard POC built on ClickStack."><rect x="450" y="28" width="92" height="32" rx="4"/><text x="496" y="48">load</text></g>
+        <g class="noder" data-tip="<b>monitor</b> — OpenTelemetry on his own orchestrator. Blind pipelines keep him up at night."><rect x="12" y="188" width="92" height="32" rx="4"/><text x="58" y="208">monitor</text></g>
+        <g class="noder" data-tip="<b>reconcile</b> — inter-operator billing discrepancies analysed down to settlement root causes."><rect x="240" y="188" width="92" height="32" rx="4"/><text x="286" y="208">reconcile</text></g>
+        <g class="noder" data-tip="<b>alert</b> — variance alert emails automated, so nobody finds out on Monday morning."><rect x="400" y="188" width="92" height="32" rx="4"/><text x="446" y="208">alert</text></g>
+        <circle class="pkt" r="3" fill="#00e5ff"><animateMotion dur="2.2s" repeatCount="indefinite" path="M104 44 H158"/></circle>
+        <circle class="pkt" r="3" fill="#00e5ff"><animateMotion dur="2.9s" begin="0.8s" repeatCount="indefinite" path="M396 44 H450"/></circle>
+        <circle class="pkt" r="3" fill="#ffd76a"><animateMotion dur="3.4s" begin="0.4s" repeatCount="indefinite" path="M496 60 C496 140 286 110 286 188"/></circle>
+      </svg>
+      <div id="dagtip"></div>
+    </div>
+    <div class="statusbar"><span class="sunken" id="dagstat" style="color:var(--green)">scheduler: RUNNING · retries: 0 · sla: met</span><span class="sunken" style="color:var(--cyan)">graduating with it: Oct 2026</span></div>
+  </section>
+
+  <!-- now_processing.wma -->
+  <section class="win dark" id="win-player" data-x="1030" data-y="150" style="width:342px">
+    <div class="tbar"><svg class="tico" viewBox="0 0 16 16"><rect width="16" height="16" fill="#0d1216" stroke="#00ff9c"/><path d="M5 4v8l7-4z" fill="#00ff9c"/></svg><span class="ttl">now_processing.wma</span><button class="tbtn" data-min title="Minimize">_</button><button class="tbtn" data-close title="Close">✕</button></div>
+    <div class="wbody pl-body">
+      <div class="pl-screen">
+        <div class="pl-time" id="pltime">00:00</div>
+        <div class="pl-khz">44 kHz · 16 bit · stereo · plays parquet files natively</div>
+        <div class="pl-track"><span class="m">▶</span><div class="pl-scroll"><span id="pltrack">u-mobile-dscvm — cdr_ingest_2B_rows.parquet</span></div></div>
+      </div>
+      <div id="eq"></div>
+      <div class="pl-ctl">
+        <button class="btn98" id="plprev" title="Previous track">⏮</button>
+        <button class="btn98" id="plplay" title="Play/Pause">❚❚</button>
+        <button class="btn98" id="plnext" title="Next track">⏭</button>
+        <span style="font-size:10px;color:#2f7a55" id="plidx">TRACK 1/4</span>
+      </div>
+      <div class="pl-list sunken" id="pllist" style="background:#010c06;padding:3px 0"></div>
+    </div>
+    <div class="statusbar"><span class="sunken" style="color:#2f7a55">buffer: full · vibes: nominal</span></div>
+  </section>
+
+  <!-- guestbook.htm -->
+  <section class="win" id="win-guestbook" data-x="250" data-y="290" style="width:440px">
+    <div class="tbar"><svg class="tico" viewBox="0 0 16 16"><rect width="16" height="16" fill="#fff" stroke="#666"/><path d="M2 3h12M2 6h12M2 9h8" stroke="#9ab"/></svg><span class="ttl">guestbook.htm — Microsoft Internet Explorer</span><button class="tbtn" data-min title="Minimize">_</button><button class="tbtn" data-close title="Close">✕</button></div>
+    <div class="gb-bar"><button class="btn98" style="padding:2px 7px">◀ Back</button><button class="btn98" style="padding:2px 7px">Forward ▶</button><span class="sunken gb-bar" style="flex:1;background:#fff;padding:2px 6px">http://www.mikh4il.sys/~mikhail/guestbook.htm</span></div>
+    <div class="wbody" style="padding:0">
+      <div class="gb-form">
+        <input id="gbname" maxlength="24" placeholder="your handle, e.g. kinabalu_ranger">
+        <textarea id="gbmsg" rows="2" maxlength="180" placeholder="leave a message for Mikhail (data eng inquiries encouraged)"></textarea>
+        <button class="btn98" id="gbsign" style="align-self:flex-end;font-weight:bold">✎ SIGN GUESTBOOK</button>
+      </div>
+      <div id="gbentries"></div>
+    </div>
+    <div class="statusbar"><span class="sunken" id="gbcount">3 entries · 0 spam</span><span class="sunken">stored locally, Y2K-compliant</span></div>
+  </section>
+
+  <!-- contact.vcf -->
+  <section class="win dark" id="win-contact" data-x="640" data-y="330" style="width:380px">
+    <div class="tbar"><svg class="tico" viewBox="0 0 16 16"><rect width="16" height="16" fill="#00303c" stroke="#00e5ff"/><path d="M2 5l6 5 6-5" stroke="#00e5ff" fill="none"/></svg><span class="ttl">contact.vcf — vCard 2.1</span><button class="tbtn" data-min title="Minimize">_</button><button class="tbtn" data-close title="Close">✕</button></div>
+    <div class="wbody" style="padding:14px;text-align:center">
+      <p style="color:var(--phos);margin-bottom:12px">BEGIN:VCARD<br>FN:Mikhail Bin Yassin<br>ROLE:Data Engineer (aspiring, over-qualified)<br>END:VCARD</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <a class="b88 vc-github" href="https://github.com/mikhaiIy" target="_blank" rel="noopener">GITHUB<small>mikhaiIy</small></a>
+        <a class="b88 vc-linkedin" href="https://linkedin.com/in/mikhailyassin" target="_blank" rel="noopener">LINKEDIN<small>mikhailyassin</small></a>
+        <a class="b88 vc-mail" href="mailto:mikhailyassin@proton.me">EMAIL<small>proton.me, encrypted</small></a>
+      </div>
+      <p style="color:var(--cyan);margin-top:14px;font-size:11px">TEL;CELL:+60 12-887 1846<br>GEO:Johor Bahru (from Kota Belud, Sabah — below Mount Kinabalu)</p>
+    </div>
+    <div class="statusbar"><span class="sunken" style="color:#2f7a55">replies within 1 business monsoon</span></div>
+
+  </section>
+
+  <!-- Recycle Bin -->
+  <section class="win" id="win-recycle" data-x="430" data-y="330" style="width:420px">
+    <div class="tbar"><svg class="tico" viewBox="0 0 16 16"><path fill="#9fb2bd" stroke="#4c5b66" d="M4 4h8l-1 10H5z"/></svg><span class="ttl">Recycle Bin</span><button class="tbtn" data-min title="Minimize">_</button><button class="tbtn" data-close title="Close">✕</button></div>
+    <div class="wbody" style="padding:0">
+      <div class="flist sunken" id="rclist" style="min-height:118px">
+        <div class="frow"><svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#fff" stroke="#888"/><path d="M3 5h10M3 8h10" stroke="#567"/></svg> resume_v3_FINAL_final2_USE_THIS_ONE.doc <span class="fmeta">489 KB</span></div>
+        <div class="frow"><svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#e8e2d8" stroke="#888"/><circle cx="8" cy="8" r="4" fill="none" stroke="#8a6"/></svg> npm_modules (4 GB, never opened) <span class="fmeta">4.0 GB</span></div>
+        <div class="frow"><svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#04110b" stroke="#00ff9c"/><path d="M4 11l3-6 3 6" stroke="#ff2e2e" fill="none"/></svg> doubt.dll <span class="fmeta">deleted · restored as sticky note</span></div>
+        <div class="frow"><svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#fff" stroke="#888"/><path d="M2 6l6 4 6-4" stroke="#567" fill="none"/></svg> shortcut to localhost:3000 (prod incident, 2024) <span class="fmeta">1 KB</span></div>
+      </div>
+      <div style="display:flex;gap:6px;justify-content:flex-end;padding:8px">
+        <button class="btn98" id="rcempty">Empty Recycle Bin</button>
+      </div>
+    </div>
+    <div class="statusbar"><span class="sunken" id="rcstatus">4 object(s)</span></div>
+  </section>
+  <!-- clippy.exe (RAG assistant) -->
+  <section class="win" id="win-clippy" data-x="960" data-y="330" style="width:400px">
+    <div class="tbar"><svg class="tico" viewBox="0 0 16 16"><rect width="16" height="16" rx="3" fill="#d4d0c8" stroke="#555"/><path d="M5 3c-2 3-2 7 2 10M11 3c2 3 2 7-2 10" stroke="#556" fill="none" stroke-width="1.6"/></svg><span class="ttl">clippy.exe — Office Assistant · RAG build 98.1</span><button class="tbtn" data-min title="Minimize">_</button><button class="tbtn" data-close title="Close">✕</button></div>
+    <div class="menubar"><span><u>F</u>ile</span><span><u>E</u>dit</span><span class="cl-view-trace"><u>V</u>iew trace</span><span><u>H</u>elp</span></div>
+    <div class="wbody" style="padding:0">
+      <div id="cllog"></div>
+      <div class="cl-trace" id="cltrace" hidden>
+        <div class="th">RETRIEVAL TRACE — corpus: resume_chunks.dat · 16 docs · keyword-BM25-lite · top-k=3 · 0ms · offline</div>
+      </div>
+      <div class="cl-chips" id="clchips"></div>
+      <form class="cl-form" id="clform" autocomplete="off">
+        <input id="clinput" placeholder="ask clippy about mikhail… (e.g. 'what did he build at u mobile?')">
+        <button class="btn98" type="submit" style="font-weight:bold">ASK</button>
+      </form>
+    </div>
+    <div class="statusbar"><span class="sunken">16 chunks indexed · v0.98 beta</span><span class="sunken" style="color:#666">retrieval: local · generation: clippy-grade</span></div>
+  </section>
+</div>
+
+<!-- ============ CLIPPY.EXE ============ -->
+<div id="clippy" title="clippy.exe — click me!">
+  <svg class="body" viewBox="0 0 100 100" aria-hidden="true">
+    <!-- paperclip wire -->
+    <path d="M36 92 C18 92 13 70 28 60 L66 33 C79 24 94 34 89 47 C86 55 76 57 71 51 L40 76 C34 81 28 78 28 70"
+          fill="none" stroke="#aebac2" stroke-width="9" stroke-linecap="round"/>
+    <path d="M36 92 C18 92 13 70 28 60 L66 33 C79 24 94 34 89 47 C86 55 76 57 71 51 L40 76 C34 81 28 78 28 70"
+          fill="none" stroke="#eef3f5" stroke-width="4" stroke-linecap="round"/>
+    <!-- face: on the upper loop -->
+    <g class="pupils" id="clpupils">
+      <circle cx="58" cy="40" r="5.2" fill="#fff" stroke="#333" stroke-width="1.4"/>
+      <circle cx="72" cy="42" r="5.2" fill="#fff" stroke="#333" stroke-width="1.4"/>
+      <circle cx="59.5" cy="41" r="2.4" fill="#111"/>
+      <circle cx="73.5" cy="43" r="2.4" fill="#111"/>
+    </g>
+    <path d="M52 32 q6 -5 12 -1" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M67 34 q5 -4 11 -1" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M55 51 q7 5 14 1" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+</div>
+<div id="cltip">
+  <span class="dismiss" title="dismiss">✕</span>
+  <b>📎 It looks like you're viewing a portfolio!</b>
+  Ask me anything about Mikhail — I'm a tiny <u>local RAG</u>: I retrieve the top matching chunks from his resume corpus, then answer. No cloud, no API, pure 1999 tech with 2026 manners.
+</div>
+
+<!-- ============ START MENU + TASKBAR ============ -->
+<div id="startmenu">
+  <div class="sm-side">MIKHAIL.SYS<span style="margin-top:auto;font-size:9px;letter-spacing:1px">98 SE</span></div>
+  <div class="sm-list">
+    <div class="smi" data-open="mydata"><svg viewBox="0 0 20 20"><path fill="#e8c352" stroke="#8a6a10" d="M2 4h6l2 2h8v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/></svg>My Data</div>
+    <div class="smi" data-open="pipeline"><svg viewBox="0 0 20 20"><rect width="20" height="20" fill="#04110b" stroke="#00ff9c"/><path d="M4 7h5m3 0h4M6 13h8" stroke="#00ff9c"/></svg>pipeline.exe</div>
+    <div class="smi" data-open="sysinfo"><svg viewBox="0 0 20 20"><rect width="20" height="20" fill="#d4d0c8" stroke="#555"/><rect y="3" width="20" height="4" fill="#000080"/><rect x="4" y="11" width="12" height="2" fill="#00e5ff"/></svg>sysinfo.exe</div>
+    <div class="smi" data-open="player"><svg viewBox="0 0 20 20"><rect width="20" height="20" fill="#0d1216" stroke="#00ff9c"/><path d="M7 5v10l8-5z" fill="#00ff9c"/></svg>now_processing.wma</div>
+    <div class="smi" data-open="guestbook"><svg viewBox="0 0 20 20"><rect width="20" height="20" fill="#fff" stroke="#666"/><path d="M3 5h14M3 9h14M3 13h9" stroke="#9ab"/></svg>guestbook.htm</div>
+    <div class="smi" data-open="contact"><svg viewBox="0 0 20 20"><rect width="20" height="20" fill="#00303c" stroke="#00e5ff"/><path d="M3 7l7 6 7-6" stroke="#00e5ff" fill="none"/></svg>contact.vcf</div>
+    <div class="smi" data-open="recycle"><svg viewBox="0 0 20 20"><path fill="#9fb2bd" stroke="#4c5b66" d="M5 5h10l-1 12H6z"/></svg>Recycle Bin</div>
+    <div class="smi"><hr></div>
+    <div class="smi" id="smshutdown"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="#c33" stroke="#708"/><path d="M10 5v6" stroke="#fff" stroke-width="2"/></svg>Shut Down...</div>
+  </div>
+</div>
+
+<div id="bar">
+  <button id="startbtn"><svg width="17" height="17" viewBox="0 0 20 20"><rect x="1" y="1" width="8" height="8" fill="#ff3b30"/><rect x="11" y="1" width="8" height="8" fill="#00d95f"/><rect x="1" y="11" width="8" height="8" fill="#2f7bff"/><rect x="11" y="11" width="8" height="8" fill="#ffd23e"/></svg>Start</button>
+  <div id="tasks"></div>
+  <div id="tray">
+    <button id="crtbtn" title="Toggle CRT scanlines">CRT</button>
+    <span id="linklight"><i></i>LINK</span>
+    <span id="clock">--:--</span>
+  </div>
+</div>
+
+<!-- ============ OVERLAYS ============ -->
+<div id="crt"></div>
+<div id="shutdown">
+  <h2>It's now safe to turn off<br>your computer.</h2>
+  <div class="big">IT IS NOW SAFE TO INTERVIEW MIKHAIL</div>
+  <p>[ click anywhere to return to the desktop ]</p>
+</div>
+
+<script>
+'use strict';
+/* ============ window manager ============ */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const LABELS={mydata:'My Data',pipeline:'pipeline.exe',sysinfo:'sysinfo.exe',player:'now_processing.wma',guestbook:'guestbook.htm',contact:'contact.vcf',recycle:'Recycle Bin',clippy:'clippy.exe'};
+const ICONS={mydata:'folder',pipeline:'dag',sysinfo:'sys',player:'play',guestbook:'htm',contact:'mail',recycle:'bin'};
+let zTop=10;
+
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function raise(w){
+  w.style.zIndex=++zTop;
+  $$('.win.open').forEach(x=>x.classList.toggle('inactive',x!==w));
+  $$('#tasks .tsk').forEach(b=>b.classList.toggle('active',b.dataset.win===w.id.slice(4)));
+}
+function makeTask(id){
+  let b=$('#tasks .tsk[data-win="'+id+'"]');
+  if(b)return b;
+  b=document.createElement('button');b.className='tsk';b.dataset.win=id;
+  b.innerHTML='<svg viewBox="0 0 16 16"><rect width="16" height="16" fill="#7d8b96"/></svg>'+LABELS[id];
+  $('#tasks').appendChild(b);
+  b.addEventListener('click',()=>{
+    const w=$('#win-'+id);
+    if(w.classList.contains('mini')){w.classList.remove('mini');raise(w);}
+    else if(b.classList.contains('active')){w.classList.add('mini');b.classList.remove('active');focusTop();}
+    else raise(w);
+  });
+  return b;
+}
+function focusTop(){
+  let best=null,bz=-1;
+  $$('.win.open:not(.mini)').forEach(w=>{const z=+w.style.zIndex||0;if(z>bz){bz=z;best=w;}});
+  if(best)raise(best);else $$('#tasks .tsk').forEach(b=>b.classList.remove('active'));
+}
+function openWin(id){
+  const w=$('#win-'+id);if(!w)return;
+  if(!w.classList.contains('open')){
+    w.classList.add('open');
+    const r=w.getBoundingClientRect();
+    w.style.left=clamp(+w.dataset.x,8,innerWidth-r.width-8)+'px';
+    w.style.top=clamp(+w.dataset.y,6,innerHeight-r.height-40)+'px';
+    makeTask(id);
+    if(!reduced)w.querySelectorAll('.pfill').forEach(f=>setTimeout(()=>f.style.width=f.dataset.w,80));
+  }
+  raise(w);
+}
+function closeWin(id){
+  const w=$('#win-'+id);if(!w)return;
+  w.classList.remove('open','mini');
+  const b=$('#tasks .tsk[data-win="'+id+'"]');if(b)b.remove();
+  focusTop();
+}
+$$('.win').forEach(w=>{
+  const id=w.id.slice(4),bar=w.querySelector('.tbar');
+  w.addEventListener('pointerdown',()=>{if(!w.classList.contains('inactive'))return;raise(w);});
+  bar.addEventListener('pointerdown',e=>{
+    if(e.target.closest('.tbtn'))return;
+    raise(w);
+    const r=w.getBoundingClientRect(),ox=e.clientX-r.left,oy=e.clientY-r.top;
+    const move=ev=>{
+      w.style.left=clamp(ev.clientX-ox,-r.width+70,innerWidth-70)+'px';
+      w.style.top=clamp(ev.clientY-oy,4,innerHeight-70)+'px';
+    };
+    const up=()=>{removeEventListener('pointermove',move);removeEventListener('pointerup',up);};
+    addEventListener('pointermove',move);addEventListener('pointerup',up);
+  });
+  w.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>closeWin(id)));
+  w.querySelectorAll('[data-min]').forEach(b=>b.addEventListener('click',()=>{w.classList.add('mini');const t=$('#tasks .tsk[data-win="'+id+'"]');if(t)t.classList.remove('active');focusTop();}));
+});
+document.addEventListener('click',e=>{
+  const o=e.target.closest('[data-open]');
+  if(o)openWin(o.dataset.open);
+});
+
+/* ============ start menu ============ */
+const startbtn=$('#startbtn'),startmenu=$('#startmenu');
+function toggleMenu(force){
+  const on=force!==undefined?force:!startmenu.classList.contains('open');
+  startmenu.classList.toggle('open',on);
+  startbtn.classList.toggle('on',on);
+}
+startbtn.addEventListener('click',e=>{e.stopPropagation();toggleMenu();});
+document.addEventListener('pointerdown',e=>{
+  if(!e.target.closest('#startmenu')&&!e.target.closest('#startbtn'))toggleMenu(false);
+});
+$('#smshutdown').addEventListener('click',()=>{toggleMenu(false);$('#shutdown').classList.add('show');});
+$('#shutdown').addEventListener('click',()=>$('#shutdown').classList.remove('show'));
+addEventListener('keydown',e=>{if(e.key==='Escape'){toggleMenu(false);$('#shutdown').classList.remove('show');}});
+
+/* ============ ticker ============ */
+const TICK='&nbsp;&nbsp;·&nbsp;&nbsp;2,000,000,000 ROWS/DAY&nbsp;&nbsp;·&nbsp;&nbsp;CHECK OUT THE DAG COLLECTION&nbsp;&nbsp;·&nbsp;&nbsp;UPTIME 99.98%&nbsp;&nbsp;·&nbsp;&nbsp;NOW HIRING: FULL-TIME MIKHAIL&nbsp;&nbsp;·&nbsp;&nbsp;KOTA BELUD WEATHER: SCATTERED CLOUDS (CUMULUS, NOT CLICKHOUSE)&nbsp;&nbsp;·&nbsp;&nbsp;[OK]';
+$('#ticktext').innerHTML='<span>'+TICK+'</span><span>'+TICK+'</span>';
+
+/* ============ odometer ============ */
+(function(){
+  const fin='00013372',els=$$('#odo i');
+  if(reduced){els.forEach((el,i)=>el.textContent=fin[i]);return;}
+  els.forEach((el,i)=>{
+    let n=0;const steps=(7-i)*7+(+fin[i]);
+    const iv=setInterval(()=>{
+      n++;
+      if(n>=steps){el.textContent=fin[i];clearInterval(iv);}
+      else el.textContent=String(n%10);
+    },42);
+  });
+})();
+
+/* ============ player ============ */
+const TRACKS=[
+  {a:'u-mobile-dscvm',t:'cdr_ingest_2B_rows.parquet',len:213},
+  {a:'fyp_dag_scheduler',t:'topological_sort_mix.wav',len:187},
+  {a:'clickstack_dashboard',t:'uptime_lullaby.lofi',len:201},
+  {a:'billing_recon',t:'settlement_blues.mid',len:244}
+];
+let ti=0,playing=true,elapsed=0;
+const eq=$('#eq');
+for(let i=0;i<21;i++)eq.appendChild(document.createElement('i'));
+const bars=[...eq.children];
+const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0');
+function renderList(){
+  $('#pllist').innerHTML='';
+  TRACKS.forEach((tr,i)=>{
+    const d=document.createElement('div');
+    d.textContent=(i+1)+'. '+tr.a+' — '+tr.t;
+    if(i===ti)d.className='cur';
+    d.addEventListener('click',()=>setTrack(i));
+    $('#pllist').appendChild(d);
+  });
+  $('#plidx').textContent='TRACK '+(ti+1)+'/'+TRACKS.length;
+}
+function setTrack(i){
+  ti=(i+TRACKS.length)%TRACKS.length;
+  elapsed=0;
+  const tr=TRACKS[ti];
+  $('#pltrack').textContent=tr.a+' — '+tr.t;
+  const sc=$('.pl-scroll span');
+  sc.style.animation='none';void sc.offsetWidth;sc.style.animation='';
+  renderList();
+}
+$('#plprev').addEventListener('click',()=>setTrack(ti-1));
+$('#plnext').addEventListener('click',()=>setTrack(ti+1));
+$('#plplay').addEventListener('click',()=>{
+  playing=!playing;
+  $('#plplay').textContent=playing?'❚❚':'▶';
+});
+setInterval(()=>{
+  if(playing){elapsed++;if(elapsed>=TRACKS[ti].len)elapsed=0;}
+  $('#pltime').textContent=fmt(elapsed);
+},1000);
+renderList();
+if(!reduced)setInterval(()=>{
+  const t=performance.now()/1000;
+  bars.forEach((b,i)=>{b.style.height=(10+42*Math.abs(Math.sin(t*(0.9+i%5*0.23)+i*1.7)))+'%';});
+},55);
+
+/* ============ dag tooltip ============ */
+const dagtip=$('#dagtip'),dagw=$('#win-pipeline .dagwrap');
+$$('#dag .noder').forEach(n=>{
+  n.addEventListener('mouseenter',()=>{dagtip.innerHTML=n.dataset.tip;dagtip.style.display='block';});
+  n.addEventListener('mousemove',e=>{
+    const r=dagw.getBoundingClientRect();
+    dagtip.style.left=clamp(e.clientX-r.left+14,4,r.width-260)+'px';
+    dagtip.style.top=clamp(e.clientY-r.top+14,4,r.height-70)+'px';
+  });
+  n.addEventListener('mouseleave',()=>dagtip.style.display='none');
+});
+const dagsvg=$('#dag');
+$('#dagbtn').addEventListener('click',()=>{
+  const paused=$('#win-pipeline').classList.toggle('paused');
+  $('#dagbtn').textContent=paused?'▶ PLAY':'⏸ PAUSE';
+  $('#dagstat').textContent=paused?'scheduler: PAUSED · coffee break':'scheduler: RUNNING · retries: 0 · sla: met';
+  paused?dagsvg.pauseAnimations():dagsvg.unpauseAnimations();
+});
+
+/* ============ guestbook ============ */
+const seeds=[
+  {n:'kinabalu_ranger',m:'summit when??',d:'12/31/1999 23:59'},
+  {n:'clickhouse_charlie',m:'76% on the ClickHouse bar?? run EXPLAIN ANALYZE and get back to me.',d:'07/04/2001 13:37'},
+  {n:'two_b_rows',m:'he processed my entire day before lunch. respect.',d:'11/11/2011 11:11'}
+];
+function addEntry(n,m,d,prepend){
+  const e=document.createElement('div');e.className='gb-entry';
+  const h=document.createElement('div');h.className='gb-head';
+  const b=document.createElement('b');b.textContent=n;
+  const dt=document.createElement('span');dt.className='gb-date';dt.textContent=d;
+  const p=document.createElement('p');p.className='gb-msg';p.textContent=m;
+  h.append(b,dt);e.append(h,p);
+  prepend?$('#gbentries').prepend(e):$('#gbentries').appendChild(e);
+}
+seeds.forEach(s=>addEntry(s.n,s.m,s.d,false));
+$('#gbsign').addEventListener('click',()=>{
+  const n=$('#gbname').value.trim()||'anonymous_coward';
+  const m=$('#gbmsg').value.trim();
+  if(!m){$('#gbmsg').placeholder='say something first — Mikhail reads every packet';return;}
+  const d=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  addEntry(n,m,'today '+d,true);
+  $('#gbname').value='';$('#gbmsg').value='';
+  const c=$('#gbentries').children.length;
+  $('#gbcount').textContent=c+' entries · 0 spam';
+});
+
+/* ============ recycle bin ============ */
+$('#rcempty').addEventListener('click',()=>{
+  $('#rclist').innerHTML='<div class="frow" style="color:#777;font-style:italic">bin is empty. the doubt was never really deleted — see sticky note.</div>';
+  $('#rcstatus').textContent='0 object(s) · 0 bytes freed (memories weigh nothing)';
+});
+
+/* ============ tray clock + crt ============ */
+function tick(){const d=new Date();let h=d.getHours(),ap=h>=12?'PM':'AM';h=h%12||12;$('#clock').textContent=h+':'+String(d.getMinutes()).padStart(2,'0')+' '+ap;}
+tick();setInterval(tick,10000);
+$('#crtbtn').addEventListener('click',()=>{document.body.classList.toggle('crton');$('#crtbtn').classList.toggle('on');});
+
+/* ============ boot sequence ============ */
+setTimeout(()=>openWin('sysinfo'),250);
+setTimeout(()=>openWin('pipeline'),550);
+setTimeout(()=>openWin('player'),850);
+/* ============ clippy.exe — local RAG assistant ============ */
+const CORPUS=[
+ {id:'d01',name:'intro_profile.txt',k:'who mikhail binyassin about bio intro person profile summary story',t:'Mikhail Bin Yassin is an aspiring data engineer from Kota Belud, Sabah, finishing a BSc in Computer Science (Data Engineering) at UTM Johor Bahru with a 3.85 CGPA. He spent 9 months as a data engineering intern at U Mobile and built a DAG-based ETL scheduler as his final-year project.',a:'That\'s <b>Mikhail Bin Yassin</b> — aspiring data engineer, Kota Belud (Sabah) native, BSc CS (Data Engineering) at UTM with a <b>3.85 CGPA</b>, 9 months of real production data work at U Mobile, and a self-built DAG orchestrator as his FYP. The sticky note says <i>rm -rf doubt</i>, and honestly, same.'},
+ {id:'d02',name:'u_mobile_internship.txt',k:'internship u mobile umobile experience work job dscvm campaign value management telecom 9 months',t:'Data engineering intern at U Mobile, Data Science & Campaign Value Management department, Nov 2025 to Aug 2026. Designed, developed and deployed PySpark and Python ETL pipelines for billing, activation and reconciliation reporting, from requirement gathering through UAT to production.',a:'He interned <b>9 months</b> at <b>U Mobile</b> (Data Science &amp; Campaign Value Management dept, Nov 2025 → Aug 2026): designed, developed and <b>deployed PySpark/Python ETL pipelines</b> for billing, activation and reconciliation reporting — carried from requirement gathering all the way to UAT and production on an on-prem big-data platform.'},
+ {id:'d03',name:'scale_2b_rows.txt',k:'scale big data 2b two billion rows cdr daily pyspark volume processing throughput',t:'Processed large-scale CDR datasets of approximately 2 billion rows per day using PySpark to prepare curated datasets for a cloud DaaS POC with an external vendor.',a:'The headline number: <b>~2,000,000,000 CDR rows per day</b>, processed with <b>PySpark</b> to prep curated datasets for a cloud DaaS POC with an external vendor. My equalizer animation is honestly the calmest way to visualize that.'},
+ {id:'d04',name:'fyp_dag_scheduler.txt',k:'fyp final year project dag directed acyclic graph scheduler scheduling orchestration orchestrator airflow',t:'Final-Year Project: Design and Implementation of a DAG-based ETL Scheduling System — a custom pipeline orchestration engine with dependency-aware scheduling.',a:'His FYP is a <b>DAG-based ETL Scheduling System</b> — custom pipeline orchestration, dependency-aware, built from scratch. You can watch it flow right now:',
+  btn:{label:'open pipeline.exe',open:'pipeline'}},
+ {id:'d05',name:'billing_reconciliation.txt',k:'billing reconciliation settlement discrepancy inter-operator analysis root cause finance',t:'Performed in-depth data analysis on inter-operator billing discrepancies and settlement reports, identifying root causes for telco finance teams.',a:'He did the forensic work on <b>inter-operator billing discrepancies</b> — analysed settlement reports and tracked issues down to root causes. Whodunit? The data knew all along.'},
+ {id:'d06',name:'monitoring_observability.txt',k:'monitoring dashboard clickstack observability opentelemetry alerting variance email automation',t:'Built a centralized platform monitoring dashboard POC on ClickStack, improved automated operational workflows including secure cloud file transfers, variance alert emails and file permission management.',a:'He built a <b>centralized platform-monitoring dashboard POC on ClickStack</b> and automated the operational plumbing: secure cloud file transfers, variance alert emails, file-permission management. Nobody finds out about a broken pipeline on Monday morning anymore.'},
+ {id:'d07',name:'skills_matrix.txt',k:'skills stack sql pyspark python clickhouse postgresql bash linux git tech',t:'SQL (92%), PySpark (88%), Linux (85%), Bash (81%), ClickHouse (76%), OpenTelemetry (64%). Also Python, PostgreSQL, Git. Interests: data engineering, real-time processing, agentic engineering, system design, cloud.',a:'The skill matrix, benchmarked on production workloads: <b>SQL 92% · PySpark 88% · Linux 85% · Bash 81% · ClickHouse 76% · OpenTelemetry 64%</b>, plus Python, PostgreSQL and Git. Full bars live here:',
+  btn:{label:'open sysinfo.exe',open:'sysinfo'}},
+ {id:'d08',name:'education_utm.txt',k:'education university utm uitm dengkil foundation degree cgpa gpa grades college',t:'Universiti Teknologi Malaysia, Johor Bahru — Bachelor of Computer Science (Data Engineering), CGPA 3.85, Oct 2021 to Oct 2026. Universiti Institusi Teknologi MARA, Dengkil — Foundation in Engineering, CGPA 4.00, 2020-2021.',a:'Education: <b>BSc Computer Science (Data Engineering), UTM Johor Bahru — CGPA 3.85</b> (Oct 2021 → Oct 2026), on top of a <b>4.00 CGPA</b> Foundation in Engineering at UiTM Dengkil. The man does not round down.'},
+ {id:'d09',name:'certifications.txt',k:'certifications certs aws academy cloud architecting data engineering google ai professional azure microsoft fundamentals',t:'AWS Academy Data Engineering, AWS Academy Cloud Architecting, Google AI Professional Cloud Foundations, Microsoft Certified Azure Data Fundamentals.',a:'Certificates on the wall: <b>AWS Academy Data Engineering</b>, <b>AWS Academy Cloud Architecting</b>, <b>Google AI Professional</b> (Cloud Foundations), <b>Microsoft Azure Data Fundamentals</b>. Cloud-stamped and everything.'},
+ {id:'d10',name:'leadership_wbl.txt',k:'leadership team lead wbl work based learning kindergarten autism school projects fcri suskom multimedia earth day',t:'Led teams of 4 in two Work-Based Learning semesters building full-stack web apps for a kindergarten in Pulai Mutiara and an autism education center — Best Group both times. Also led showcase planning at FCRI 2025 and multimedia teams at SUSKOM 23 and Earth Day 2023.',a:'He led a <b>4-person team</b> in two Work-Based Learning semesters — a full-stack web app for a kindergarten in Pulai Mutiara, then one for an autism education center in JB — and was <b>Best Group both times</b>. Off-screen: showcase lead at FCRI 2025 (talking to Finexus Group), multimedia lead at SUSKOM\'23 and Earth Day 2023.'},
+ {id:'d11',name:'contact_card.txt',k:'contact hire email github linkedin phone reach out vcard recruit',t:'GitHub mikhaiIy, LinkedIn mikhailyassin, email mikhailyassin@proton.me, phone +60 12-887 1846. Based in Johor Bahru, from Kota Belud Sabah.',a:'To reach Mikhail: <b>GitHub</b> mikhaiIy · <b>LinkedIn</b> mikhailyassin · <b>mikhailyassin@proton.me</b> · +60 12-887 1846. The vCard is right over there:',
+  btn:{label:'open contact.vcf',open:'contact'}},
+ {id:'d12',name:'hometown_kotabelud.txt',k:'kota belud hometown sabah mount kinabalu born home origin malaysia weather',t:'Mikhail is from Kota Belud, Sabah — a town below Mount Kinabalu, the highest peak in Malaysia at 4,095m. Current base: Johor Bahru.',a:'Home base is <b>Kota Belud, Sabah</b> — the town in the shadow of <b>Mount Kinabalu</b> (4,095m, highest in Malaysia). The weather widget reports 31°C and scattered clouds; my weather source is vibestational.'},
+ {id:'d13',name:'interests_llm.txt',k:'interests llm agents agentic ai engineering future systems real time paradigm emergence',t:'Interested in how data, software and AI change in the new paradigm of LLM-emergence. Interests: data engineering, real-time data processing, agentic engineering, system design and cloud systems.',a:'He\'s watching the <b>LLM-emergence paradigm</b> closely — agentic engineering, real-time data processing, and how data + software + AI reorganize each other. Which is the correct genre of obsession for a data engineer in 2026.'},
+ {id:'d14',name:'how_i_work_rag.txt',k:'rag retrieval augmented generation assistant how work corpus chunks index retrieval search engine bot',t:'clippy.exe runs a toy retrieval-augmented generation pipeline: a corpus of 16 resume chunks, BM25-lite keyword scoring, top-k 3 retrieval, template generation. Fully offline and deterministic.',a:'Me? I\'m a <b>toy RAG</b>, honestly worn on my sleeve: a corpus of <b>16 resume chunks</b>, <b>BM25-lite keyword scoring</b>, <b>top-k=3 retrieval</b>, then a Clippy-grade template response. No LLM API, no cloud — <i>retrieval-augmented generation</i> with the retrieval in plain sight. Press <b>View trace</b> in the menu bar and I\'ll show my working after every question.'},
+ {id:'d15',name:'fun_facts_bin.txt',k:'fun recycle bin doubt npm modules easter egg sticky joke humor',t:'The Recycle Bin contains resume_v3_FINAL_final2_USE_THIS_ONE.doc, npm_modules (4GB, never opened), doubt.dll (deleted, restored as sticky note), and a shortcut to a 2024 prod incident.',a:'Classified documents from the Recycle Bin: <i>resume_v3_FINAL_final2_USE_THIS_ONE.doc</i>, <i>npm_modules (4 GB, never opened)</i>, and <i>doubt.dll</i> — deleted, then restored as a sticky note. Archaeology welcome:',
+  btn:{label:'open Recycle Bin',open:'recycle'}},
+ {id:'d16',name:'guestbook_sign.txt',k:'guestbook sign message comment visitor signature leave',t:'The guestbook is open — sign it with a handle and a message. Seeded entries include kinabalu_ranger asking summit when.',a:'The <b>guestbook</b> is open for business — pick a handle, leave a message, become part of the log. kinabalu_ranger still hasn\'t answered <i>summit when??</i>, by the way:',
+  btn:{label:'open guestbook.htm',open:'guestbook'}},
+];
+const STOP=new Set(['the','a','an','is','are','was','of','to','in','on','for','and','or','it','this','that','what','who','did','do','does','he','his','him','she','her','at','by','with','about','how','you','i','me','my','tell','show','can','please','hi','hello','hey','like','like','mikhail','s']);
+const CLIPPY_SAY=[
+  'It looks like you\'re trying to hire a data engineer! Here\'s what the corpus says:',
+  'Good question — I searched <b>C:\\RESUME\\</b> and found this:',
+  'Ooh, I have chunks for that. Top result:',
+  'Verifying with the resume corpus… a-ha:',
+  'Per my last retrieval:',
+];
+const FALLBACK='Hmm — nothing in the corpus scores above zero for that. I\'m a keyword machine from 1999, so try one of these, or say <i>"how do you work"</i> to see my RAG guts:';
+let clSay=0,clTalking=false;
+
+function clNorm(s){return s.toLowerCase().replace(/[^a-z0-9 ]+/g,' ').split(/\s+/).filter(Boolean);}
+function retrieve(q){
+  const terms=[...new Set(clNorm(q).filter(w=>!STOP.has(w)&&w.length>1))];
+  if(!terms.length)return{hits:[],terms};
+  const scored=CORPUS.map(d=>{
+    const kt=clNorm(d.k),tt=clNorm(d.t+' '+d.name);
+    let s=0;const matched=[];
+    for(const w of terms){
+      const ck=kt.filter(x=>x===w||x.startsWith(w)&&w.length>3).length;
+      const ct=tt.filter(x=>x===w).length;
+      if(ck+ct>0)matched.push(w);
+      s+=ck*2+ct;
+    }
+    return{d,s,matched};
+  }).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,3);
+  return{hits:scored,terms};
+}
+
+function clBubble(kind,who,html){
+  const m=document.createElement('div');m.className='cl-m '+kind;
+  const w=document.createElement('span');w.className='who';w.textContent=who;
+  const b=document.createElement('div');b.className='body';b.innerHTML=html;
+  m.append(w,b);$('#cllog').appendChild(m);
+  $('#cllog').scrollTop=1e6;
+  return m;
+}
+function clTyping(){
+  const t=document.createElement('div');t.className='cl-typing';
+  t.innerHTML='clippy is flipping through chunks <i>.</i><i>.</i><i>.</i>';
+  $('#cllog').appendChild(t);$('#cllog').scrollTop=1e6;
+  return t;
+}
+function renderTrace(hits){
+  const box=$('#cltrace');
+  box.hidden=false;
+  box.querySelectorAll('.tr,.nohit').forEach(x=>x.remove());
+  if(!hits.length){
+    const n=document.createElement('div');n.className='nohit';n.textContent='0 chunks matched — top-k empty (all scores 0.00)';box.appendChild(n);
+  }
+  hits.forEach((h,i)=>{
+    const max=hits[0].s||1;
+    const row=document.createElement('div');row.className='tr';
+    row.innerHTML='<span class="tid">'+h.d.id+'</span>'+
+      '<span class="tscore">score '+(h.s/Math.max(10,max)).toFixed(2)+'</span>'+
+      '<span class="tbar"><span class="tfill"></span></span>'+
+      '<span class="tname">'+h.d.name+'</span>'+
+      '<span class="tterms">matched: '+(h.matched.join(', ')||'—')+'</span>';
+    box.appendChild(row);
+    if(!reduced)setTimeout(()=>row.querySelector('.tfill').style.width=Math.round(h.s/max*100)+'%',60+i*140);
+    else row.querySelector('.tfill').style.width=Math.round(h.s/max*100)+'%';
+  });
+  box.scrollTop=1e6;
+}
+function clAnswer(q){
+  if(clTalking)return;
+  clTalking=true;
+  const{hits}=retrieve(q);
+  $('#cltrace').hidden=false;
+  renderTrace(hits);
+  clBubble('me','you',q.replace(/</g,'&lt;'));
+  const t=clTyping();
+  $('#clippy').classList.remove('confused','excited');
+  const delay=reduced?120:600;
+  setTimeout(()=>{
+    t.remove();
+    if(!hits.length){
+      clBubble('bot','clippy 📎',FALLBACK);
+      clChips(['how do you work?','what did he build at u mobile?','certifications','contact / hire','fun facts']);
+      clTalking=false;
+    }else{
+      $('#clippy').classList.add('excited');
+      const top=hits[0].d;
+      const open=()=>{const m=clBubble('bot','clippy 📎',CLIPPY_SAY[clSay++%CLIPPY_SAY.length]+'<br><br>'+top.a);if(top.btn)m.querySelector('.body').insertAdjacentHTML('beforeend','<br><button class="btn98" data-open="'+top.btn.open+'">'+top.btn.label+'</button>');clTalking=false;};
+      open();
+      clChips(['show me the pipeline','skills','education','2B rows/day','who is mikhail?']);
+    }
+    if(!reduced)setTimeout(()=>$('#clippy').classList.remove('excited','confused'),1400);
+  },delay);
+}
+function clChips(list){
+  const c=$('#clchips');c.innerHTML='';
+  list.forEach(t=>{
+    const s=document.createElement('span');s.className='cl-chip';s.textContent=t;
+    s.addEventListener('click',()=>{clAnswer(t);});
+    c.appendChild(s);
+  });
+}
+$('#clform').addEventListener('submit',e=>{
+  e.preventDefault();
+  const v=$('#clinput').value.trim();
+  if(!v)return;
+  $('#clinput').value='';
+  clAnswer(v);
+});
+document.querySelector('.cl-view-trace').addEventListener('click',()=>{$('#cltrace').hidden=!$('#cltrace').hidden;});
+
+/* clippy click, tip balloon, eye tracking */
+let tipShown=0;
+function showTip(){if(tipShown>=3)return;$('#cltip').classList.add('show');tipShown++;}
+$('#cltip').addEventListener('click',()=>$('#cltip').classList.remove('show'));
+setTimeout(showTip,2600);
+/* eye tracking: pupils follow cursor, throttled */
+if(!reduced){
+  let last=0;
+  addEventListener('pointermove',e=>{
+    const now=performance.now();
+    if(now-last<70)return;last=now;
+    const r=$('#clippy').getBoundingClientRect();
+    const cx=r.left+r.width*.65,cy=r.top+r.height*.42;
+    const dx=e.clientX-cx,dy=e.clientY-cy,d=Math.hypot(dx,dy)||1;
+    const k=Math.min(2.4,d/60);
+    $('#clpupils').setAttribute('transform','translate('+((dx/d)*k).toFixed(1)+','+((dy/d)*k).toFixed(1)+')');
+  });
+}
+$('#clippy').addEventListener('click',()=>{openWin('clippy');});
+
+/* boot clippy: open chat + seed welcome */
+setTimeout(()=>openWin('clippy'),1150);
+setTimeout(()=>{
+  clBubble('bot','clippy 📎','Oh hello! I\'m <b>Clippit</b>, Mikhail\'s office assistant. Ask me anything about him — I run a tiny <b>local RAG</b>: I score his resume corpus, show you the retrieved chunks in the trace panel, then answer from the top hit. Try one of the chips below, or just type.');
+  clChips(['who is mikhail?','what did he build at u mobile?','how do you work?','show me the pipeline','contact / hire']);
+},1300);
+</script>
+</body>
+</html>
+
